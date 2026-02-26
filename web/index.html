@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Builder — конструктор писем</title>
+    <style>
+        :root {
+            --bg: #0d0d0d;
+            --surface: #1a1a1a;
+            --border: #2a2a2a;
+            --text: #e0e0e0;
+            --text-dim: #888;
+            --accent: #4f6ef7;
+            --accent-hover: #6b8aff;
+            --success: #22c55e;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--accent), #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            color: var(--text-dim);
+            margin-bottom: 32px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+        
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+        
+        .card h2 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            width: 100%;
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .preview-frame {
+            width: 100%;
+            height: 500px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: white;
+        }
+        
+        .status {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .status.success {
+            display: block;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+        
+        .status.error {
+            display: block;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+        }
+        
+        .block-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .block-tag {
+            padding: 6px 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .block-tag:hover {
+            border-color: var(--accent);
+        }
+        
+        .block-tag.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+        
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .upload-zone:hover {
+            border-color: var(--accent);
+        }
+        
+        .upload-zone.dragover {
+            border-color: var(--accent);
+            background: rgba(79, 110, 247, 0.1);
+        }
+        
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📧 Email Builder</h1>
+        <p class="subtitle">Создавай профессиональные письма за минуты</p>
+        
+        <div class="grid">
+            <div class="card">
+                <h2>Настройки письма</h2>
+                
+                <div id="status" class="status"></div>
+                
+                <div class="form-group">
+                    <label>Тип письма</label>
+                    <select id="emailType">
+                        <option value="ecommerce">🛒 E-commerce</option>
+                        <option value="saas">💻 Tech / SaaS</option>
+                        <option value="b2b">🏢 B2B / Корпоративный</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Тема письма</label>
+                    <input type="text" id="subject" placeholder="Добро пожаловать!" value="Новости от компании">
+                </div>
+                
+                <div class="form-group">
+                    <label>Прехедер (текст в списке писем)</label>
+                    <input type="text" id="preheader" placeholder="Узнайте больше..." value="Узнайте больше в этом письме">
+                </div>
+                
+                <div class="form-group">
+                    <label>Блоки</label>
+                    <div class="block-list">
+                        <span class="block-tag active" data-type="header">Шапка</span>
+                        <span class="block-tag" data-type="hero">Hero</span>
+                        <span class="block-tag" data-type="text">Текст</span>
+                        <span class="block-tag" data-type="button">Кнопка</span>
+                        <span class="block-tag" data-type="products">Товары</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Загрузка картинки</label>
+                    <div class="upload-zone" id="uploadZone">
+                        <p>Перетащи файл или кликни</p>
+                        <p style="font-size: 12px; color: var(--text-dim); margin-top: 8px;">JPG, PNG, GIF до 5MB</p>
+                    </div>
+                    <input type="file" id="fileInput" accept="image/*" class="hidden">
+                    <div id="uploadResult" style="margin-top: 8px; font-size: 13px; color: var(--success);"></div>
+                </div>
+                
+                <button class="btn btn-primary" id="generateBtn">Создать email</button>
+            </div>
+            
+            <div class="card">
+                <h2>Preview</h2>
+                <iframe id="preview" class="preview-frame"></iframe>
+                <button class="btn" id="downloadBtn" style="margin-top: 16px; background: var(--surface); border: 1px solid var(--border); color: var(--text); width: 100%;" disabled>
+                    Скачать HTML
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const state = {
+            blocks: ['header'],
+            uploadedImage: null
+        };
+        
+        // Block toggles
+        document.querySelectorAll('.block-tag').forEach(tag => {
+            tag.addEventListener('click', () => {
+                tag.classList.toggle('active');
+                const type = tag.dataset.type;
+                if (tag.classList.contains('active')) {
+                    if (!state.blocks.includes(type)) state.blocks.push(type);
+                } else {
+                    state.blocks = state.blocks.filter(b => b !== type);
+                }
+            });
+        });
+        
+        // Upload
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+        
+        uploadZone.addEventListener('click', () => fileInput.click());
+        
+        uploadZone.addEventListener('dragover', e => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+        
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+        
+        uploadZone.addEventListener('drop', e => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            handleFile(e.dataTransfer.files[0]);
+        });
+        
+        fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
+        
+        async function handleFile(file) {
+            if (!file) return;
+            
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            try {
+                const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                const data = await res.json();
+                
+                if (data.url) {
+                    state.uploadedImage = data.url;
+                    document.getElementById('uploadResult').textContent = '✓ Загружено: ' + data.url;
+                }
+            } catch (err) {
+                showStatus('Ошибка загрузки', 'error');
+            }
+        }
+        
+        // Generate
+        document.getElementById('generateBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('generateBtn');
+            btn.disabled = true;
+            btn.textContent = 'Создаю...';
+            
+            const blocks = state.blocks.map(type => {
+                const data = {};
+                
+                if (type === 'header') {
+                    data.logo = 'MYBRAND';
+                    data.link = 'https://example.com';
+                } else if (type === 'hero') {
+                    data.title = 'Заголовок письма';
+                    data.description = 'Описание вашего предложения';
+                    data.button_text = 'Узнать больше';
+                    if (state.uploadedImage) data.image = state.uploadedImage;
+                } else if (type === 'text') {
+                    data.title = 'Заголовок блока';
+                    data.content = 'Текст вашего сообщения...';
+                } else if (type === 'button') {
+                    data.text = 'Перейти';
+                } else if (type === 'products') {
+                    data.items = [
+                        { name: 'Товар 1', description: 'Описание', price: '1 990 ₽', image: state.uploadedImage },
+                        { name: 'Товар 2', description: 'Описание', price: '2 990 ₽', image: state.uploadedImage }
+                    ];
+                }
+                
+                return { type, data, enabled: true };
+            });
+            
+            const payload = {
+                type: document.getElementById('emailType').value,
+                subject: document.getElementById('subject').value,
+                preheader: document.getElementById('preheader').value,
+                blocks
+            };
+            
+            try {
+                const res = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await res.json();
+                
+                if (data.html) {
+                    const iframe = document.getElementById('preview');
+                    iframe.srcdoc = data.html;
+                    
+                    document.getElementById('downloadBtn').disabled = false;
+                    document.getElementById('downloadBtn').onclick = () => {
+                        const a = document.createElement('a');
+                        a.href = 'data:text/html;charset=utf-8,' + encodeURIComponent(data.html);
+                        a.download = 'email.html';
+                        a.click();
+                    };
+                    
+                    showStatus('✓ Email создан!', 'success');
+                }
+            } catch (err) {
+                showStatus('Ошибка: ' + err.message, 'error');
+            }
+            
+            btn.disabled = false;
+            btn.textContent = 'Создать email';
+        });
+        
+        function showStatus(msg, type) {
+            const el = document.getElementById('status');
+            el.textContent = msg;
+            el.className = 'status ' + type;
+        }
+    </script>
+</body>
+</html>
