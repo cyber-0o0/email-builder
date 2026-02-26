@@ -1,8 +1,14 @@
-# Email Builder — конструктор HTML email
+# Email Builder
 
-**Версия:** 0.1.0 (MVP)
+**Конструктор HTML email-шаблонов с AI и хостингом картинок**
 
-## Идея
+🌐 **Сайт:** https://ezhik-ideas.example.com
+
+📱 **Telegram Mini App:** @ezhik_ideas_bot
+
+---
+
+## Возможности
 
 Конструктор HTML email-шаблонов с:
 - Drag-and-drop или JSON-описание блоков
