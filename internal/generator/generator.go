@@ -115,6 +115,8 @@ func (g *Generator) renderBlock(block Block, t *EmailTemplate) string {
 		return g.button(block.Data)
 	case "products":
 		return g.products(block.Data)
+	case "social":
+		return g.social(block.Data)
 	case "footer":
 		return g.customFooter(block.Data)
 	default:
@@ -362,6 +364,55 @@ func (g *Generator) customFooter(data map[string]interface{}) string {
     </td>
 </tr>
 `, company, address, phone, phone, email, email, unsubscribe, company)
+}
+
+// social — блок соцсетей
+func (g *Generator) social(data map[string]interface{}) string {
+	networks, _ := data["networks"].([]interface{})
+	if len(networks) == 0 {
+		// Дефолтные соцсети
+		networks = []interface{}{
+			map[string]interface{}{"type": "telegram", "link": "https://t.me/example"},
+			map[string]interface{}{"type": "vk", "link": "https://vk.com/example"},
+			map[string]interface{}{"type": "instagram", "link": "https://instagram.com/example"},
+		}
+	}
+
+	var icons strings.Builder
+	icons.WriteString(`<tr><td align="center" style="padding: 16px 0;">`)
+
+	for _, n := range networks {
+		network, _ := n.(map[string]interface{})
+		networkType := getString(network, "type", "telegram")
+		link := getString(network, "link", "https://example.com")
+
+		var iconURL, alt string
+		switch networkType {
+		case "telegram":
+			iconURL = "https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/telegram.svg"
+			alt = "Telegram"
+		case "vk":
+			iconURL = "https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/vk.svg"
+			alt = "ВКонтакте"
+		case "instagram":
+			iconURL = "https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/instagram.svg"
+			alt = "Instagram"
+		case "whatsapp":
+			iconURL = "https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/whatsapp.svg"
+			alt = "WhatsApp"
+		case "youtube":
+			iconURL = "https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/youtube.svg"
+			alt = "YouTube"
+		default:
+			iconURL = "https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/link.svg"
+			alt = networkType
+		}
+
+		icons.WriteString(fmt.Sprintf(`<a href="%s" target="_blank" style="display: inline-block; margin: 0 8px;"><img src="%s" width="32" height="32" alt="%s" style="display: block; border: 0; width: 32px; height: 32px;"></a>`, link, iconURL, alt))
+	}
+
+	icons.WriteString(`</td></tr>`)
+	return icons.String()
 }
 
 // getString — получить строку из map
