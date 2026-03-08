@@ -119,6 +119,8 @@ func (g *Generator) renderBlock(block Block, t *EmailTemplate) string {
 		return g.social(block.Data)
 	case "footer":
 		return g.customFooter(block.Data)
+	case "divider":
+		return g.divider(block.Data)
 	default:
 		return ""
 	}
@@ -302,6 +304,17 @@ func (g *Generator) productCard(data map[string]interface{}) string {
 </td>`, imgHTML, name, desc, price, link)
 }
 
+// divider — горизонтальный разделитель
+func (g *Generator) divider(data map[string]interface{}) string {
+	color := getString(data, "color", "#e0e0e0")
+	height := getInt(data, "height", 1)
+	
+	return fmt.Sprintf(`
+<tr>
+    <td style="font-size: 0; height: %dpx; background-color: %s;" height="%d">&nbsp;</td>
+</tr>`, height, color, height)
+}
+
 // footer — футер
 func (g *Generator) footer() string {
 	return `
@@ -420,6 +433,16 @@ func getString(data map[string]interface{}, key, def string) string {
 	if val, ok := data[key]; ok {
 		if s, ok := val.(string); ok {
 			return s
+		}
+	}
+	return def
+}
+
+// getInt — получить int из map
+func getInt(data map[string]interface{}, key string, def int) int {
+	if val, ok := data[key]; ok {
+		if n, ok := val.(float64); ok {
+			return int(n)
 		}
 	}
 	return def
