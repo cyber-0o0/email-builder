@@ -1,0 +1,84 @@
+<!--HEAD_START--><!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<!--HEAD_END-->
+<title>Сброс и Снос</title>
+<!--FONTS-->
+<style>/*CSS*/</style>
+<!--BODY_START--></head>
+<body>
+<!--BODY_END-->
+<canvas id="game"></canvas>
+
+<div id="hud">
+  <div class="top">
+    <div class="chip" id="lvlChip"><b id="lvlNum">1</b><small id="worldName"></small></div>
+    <div id="targetBox">
+      <div id="tName"></div>
+      <div class="hp" id="hp"><i id="hpGhost"></i><i id="hpFill"></i><span id="hpText"></span></div>
+    </div>
+    <div class="chip" id="coinChip"><i class="coin-ico"></i><span id="coinText">0</span></div>
+    <button class="icon-btn" id="btnSet" aria-label="Settings"><svg viewBox="0 0 24 24"><path d="M19.4 13a7.6 7.6 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.4 7.4 0 0 0-1.7-1L15 3h-4l-.4 2.9a7.4 7.4 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.6 7.6 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1a7.4 7.4 0 0 0 1.7 1L11 21h4l.4-2.9a7.4 7.4 0 0 0 1.7-1l2.5 1 2-3.5zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg></button>
+  </div>
+  <div id="combo"></div>
+  <div id="toast"><small></small><b></b></div>
+  <div id="hint" hidden><span class="finger">👇</span><span id="hintText"></span></div>
+  <div class="bar">
+    <button id="btnShop"><span class="dot"></span><svg viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></svg><span id="shopLbl"></span></button>
+    <div id="items"></div>
+  </div>
+</div>
+
+<div class="screen" id="title" hidden>
+  <div class="title-wrap">
+    <div class="logo"><span id="logo1">СБРОС</span><span id="logo2">И СНОС</span><em id="logoSub"></em></div>
+    <button class="btn yellow" id="btnPlay"><span class="play-ico"></span><span id="playLbl"></span></button>
+    <div class="title-meta" id="titleMeta"></div>
+  </div>
+</div>
+
+<div class="screen" id="win" hidden>
+  <div class="panel">
+    <div class="panel-head"><h2 id="winTitle"></h2><div class="win-target" id="winTarget"></div></div>
+    <div class="panel-body">
+      <div class="stats" id="winStats"></div>
+      <div class="row-btns">
+        <button class="btn ad" id="btnX2"></button>
+        <button class="btn" id="btnNext"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="screen" id="shop" hidden>
+  <div class="panel">
+    <div class="panel-head"><h2 id="shopTitle"></h2><span class="shop-coins"><i class="coin-ico"></i><span id="shopCoins">0</span></span><button class="close" id="shopClose" aria-label="Close">✕</button></div>
+    <div class="tabs"><button class="tab on" data-tab="items" id="tabItems"></button><button class="tab" data-tab="ups" id="tabUps"></button></div>
+    <div class="panel-body" id="shopBody"></div>
+  </div>
+</div>
+
+<div class="screen" id="settings" hidden>
+  <div class="panel">
+    <div class="panel-head"><h2 id="setTitle"></h2><button class="close" id="setClose" aria-label="Close">✕</button></div>
+    <div class="panel-body" id="setBody"></div>
+  </div>
+</div>
+
+<div class="screen" id="unlock" hidden>
+  <div class="panel">
+    <div class="panel-head"><h2 id="unlockTitle"></h2></div>
+    <div class="panel-body">
+      <div class="unlock-stage"><div class="rays"></div><canvas class="unlock-ico" id="unlockIco" width="300" height="300"></canvas></div>
+      <div class="unlock-name" id="unlockName"></div>
+      <div class="unlock-desc" id="unlockDesc"></div>
+      <div class="center"><button class="btn yellow" id="unlockOk"></button></div>
+    </div>
+  </div>
+</div>
+
+<script>/*JS*/</script>
+<!--TAIL_START--></body>
+</html><!--TAIL_END-->
