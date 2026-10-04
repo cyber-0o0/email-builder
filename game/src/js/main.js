@@ -15,13 +15,9 @@ async function boot() {
 
   UI.init();
   // preview of the current target behind the title screen
-  G.level = SAVE.level;
   G.info = World.build(SAVE.level);
-  G.world = G.info.world;
-  Music.world = G.world;
   Render.resize();
-  G.state = 'idle';
-  UI.onLevelStart();
+  G.preview(SAVE.level);
   UI.showTitle();
 
   /* ---------- input ---------- */

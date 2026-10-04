@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const root = path.join(__dirname, '..');
 const src = (p) => fs.readFileSync(path.join(root, 'src', p), 'utf8');
-const ORDER = ['core', 'sdk', 'audio', 'materials', 'targets', 'items', 'world', 'fx', 'render', 'game', 'ui', 'main'];
+const ORDER = ['core', 'sdk', 'audio', 'materials', 'targets', 'story', 'items', 'world', 'fx', 'render', 'game', 'ui', 'main'];
 
 function fontsCSS() {
   const css = fs.readFileSync(path.join(__dirname, 'fonts', 'fonts.css'), 'utf8');

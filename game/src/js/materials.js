@@ -75,9 +75,10 @@ function makeTex(id) {
       }
       if (R() < 2) { g.fillStyle = dark; g.globalAlpha = 0.5; g.beginPath(); g.ellipse(R() * S, R() * S, 4, 2.5, 0, 0, TAU); g.fill(); g.globalAlpha = 1; }
       if (id === 'tnt') {
-        g.fillStyle = '#2a0b08'; g.globalAlpha = 0.85; g.fillRect(0, 40, S, 48); g.globalAlpha = 1;
-        g.fillStyle = '#ffe9c9'; g.font = '900 30px Arial Black, Impact, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
-        g.fillText('TNT', 64, 66);
+        // fireworks crate: a band of stars
+        
+        const star = (cx, cy, r, col) => { g.fillStyle = col; g.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * 0.45 : r; g.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr); } g.closePath(); g.fill(); };
+        star(22, 64, 13, '#ffd23f'); star(64, 64, 15, '#fff3c4'); star(106, 64, 13, '#ffd23f');
       }
       break;
     }

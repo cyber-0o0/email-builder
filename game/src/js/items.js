@@ -8,20 +8,20 @@ const ITEMS = [
     unlock: 2, cost: 20, kind: 'impact', dmg: 15, aoe: 50, r: 17, mass: 1.5, cd: 0.5, pierce: 0.3, bounce: 0.2 },
   { id: 'bowling', name: { ru: 'Шар для боулинга', en: 'Bowling Ball' }, desc: { ru: 'Катится и добивает', en: 'Rolls and keeps hitting' },
     unlock: 3, cost: 35, kind: 'impact', dmg: 26, aoe: 52, r: 21, mass: 3, cd: 0.9, pierce: 0.55, bounce: 0.3 },
-  { id: 'bomb', name: { ru: 'Бомба', en: 'Bomb' }, desc: { ru: 'Взрыв по площади', en: 'Area explosion' },
-    unlock: 4, cost: 55, kind: 'explode', dmg: 42, aoe: 115, r: 20, mass: 2, cd: 2.2, whistle: true },
+  { id: 'bomb', name: { ru: 'Фейерверк', en: 'Firework' }, desc: { ru: 'Лопается ярким салютом', en: 'Pops into a bright salute' },
+    unlock: 4, cost: 55, kind: 'explode', dmg: 42, aoe: 115, r: 20, mass: 2, cd: 2.2, whistle: true, party: true },
   { id: 'anvil', name: { ru: 'Наковальня', en: 'Anvil' }, desc: { ru: 'Пробивает насквозь', en: 'Punches straight through' },
     unlock: 5, cost: 80, kind: 'impact', dmg: 55, aoe: 60, r: 25, mass: 8, cd: 1.6, pierce: 0.88, bounce: 0.05 },
   { id: 'piano', name: { ru: 'Пианино', en: 'Piano' }, desc: { ru: 'Музыкальный урон', en: 'Musical damage' },
     unlock: 6, cost: 120, kind: 'impact', dmg: 85, aoe: 90, r: 33, mass: 9, cd: 3, pierce: 0.6, bounce: 0.1, breaks: true },
-  { id: 'cluster', name: { ru: 'Кассетная бомба', en: 'Cluster Bomb' }, desc: { ru: 'Распадается на 6 бомб', en: 'Splits into 6 bomblets' },
-    unlock: 7, cost: 170, kind: 'cluster', dmg: 28, aoe: 72, r: 19, mass: 2, cd: 3.4, n: 6 },
-  { id: 'acid', name: { ru: 'Бочка кислоты', en: 'Acid Barrel' }, desc: { ru: 'Разъедает всё вокруг', en: 'Eats through everything' },
+  { id: 'cluster', name: { ru: 'Хлопушка', en: 'Party Popper' }, desc: { ru: 'Разлетается на 6 конфетти-шаров', en: 'Splits into 6 confetti balls' },
+    unlock: 7, cost: 170, kind: 'cluster', dmg: 28, aoe: 72, r: 19, mass: 2, cd: 3.4, n: 6, party: true },
+  { id: 'acid', name: { ru: 'Ведро слизи', en: 'Slime Bucket' }, desc: { ru: 'Липкая слизь размягчает всё вокруг', en: 'Sticky goo softens everything' },
     unlock: 9, cost: 260, kind: 'acid', dmg: 16, aoe: 135, r: 22, mass: 3, cd: 5, dur: 4 },
   { id: 'drill', name: { ru: 'Бур', en: 'Drill' }, desc: { ru: 'Сверлит до самой земли', en: 'Drills down to the ground' },
     unlock: 10, cost: 340, kind: 'drill', dmg: 75, aoe: 30, r: 20, mass: 4, cd: 4, dur: 1.5 },
-  { id: 'cow', name: { ru: 'Корова', en: 'Cow' }, desc: { ru: 'Прыгучая. Очень', en: 'Very bouncy. Moo' },
-    unlock: 12, cost: 480, kind: 'impact', dmg: 60, aoe: 75, r: 30, mass: 6, cd: 3.5, pierce: 0.2, bounce: 0.72, moo: true },
+  { id: 'cow', name: { ru: 'Резиновая уточка', en: 'Rubber Duck' }, desc: { ru: 'Прыгучая. Очень. Пищит', en: 'Very bouncy. Squeaks' },
+    unlock: 12, cost: 480, kind: 'impact', dmg: 60, aoe: 75, r: 30, mass: 6, cd: 3.5, pierce: 0.2, bounce: 0.72, squeak: true },
   { id: 'freeze', name: { ru: 'Ледяная бомба', en: 'Freeze Bomb' }, desc: { ru: 'Заморозка: урон x2.5', en: 'Frozen: x2.5 damage' },
     unlock: 13, cost: 600, kind: 'freeze', dmg: 10, aoe: 165, r: 20, mass: 2, cd: 7, dur: 6 },
   { id: 'bolt', name: { ru: 'Молния', en: 'Lightning' }, desc: { ru: 'Мгновенный разряд по цепи', en: 'Instant chain strike' },
@@ -30,12 +30,12 @@ const ITEMS = [
     unlock: 17, cost: 1100, kind: 'impact', dmg: 170, aoe: 100, r: 35, mass: 20, cd: 5, pierce: 0.92, bounce: 0.02 },
   { id: 'meteor', name: { ru: 'Метеорит', en: 'Meteor' }, desc: { ru: 'Огненный удар с неба', en: 'Fire from the sky' },
     unlock: 19, cost: 1500, kind: 'explode', dmg: 160, aoe: 165, r: 26, mass: 10, cd: 7, fire: true },
-  { id: 'laser', name: { ru: 'Орбитальный лазер', en: 'Orbital Laser' }, desc: { ru: 'Луч режет сверху вниз', en: 'A beam that cuts top to bottom' },
+  { id: 'laser', name: { ru: 'Солнечная лупа', en: 'Sun Magnifier' }, desc: { ru: 'Солнечный луч плавит сверху вниз', en: 'A sunbeam melts top to bottom' },
     unlock: 22, cost: 2300, kind: 'laser', dmg: 140, aoe: 36, r: 0, mass: 0, cd: 10, dur: 1.8 },
-  { id: 'hole', name: { ru: 'Чёрная дыра', en: 'Black Hole' }, desc: { ru: 'Засасывает обломки', en: 'Swallows the debris' },
+  { id: 'hole', name: { ru: 'Космический пылесос', en: 'Space Vacuum' }, desc: { ru: 'Засасывает обломки', en: 'Sucks up the debris' },
     unlock: 25, cost: 3500, kind: 'hole', dmg: 95, aoe: 160, r: 18, mass: 3, cd: 14, dur: 2.6 },
-  { id: 'nuke', name: { ru: 'Ядерная бомба', en: 'Nuke' }, desc: { ru: 'Без комментариев', en: 'No comment' },
-    unlock: 28, cost: 6000, kind: 'explode', dmg: 950, aoe: 430, r: 28, mass: 6, cd: 35, nuke: true, whistle: true },
+  { id: 'nuke', name: { ru: 'Астероид', en: 'Asteroid' }, desc: { ru: 'Самый большой камень в космосе', en: 'The biggest rock in space' },
+    unlock: 28, cost: 6000, kind: 'explode', dmg: 950, aoe: 430, r: 34, mass: 20, cd: 35, mega: true, fire: true },
 ];
 const ITEM = {};
 ITEMS.forEach((d) => { ITEM[d.id] = d; });
@@ -93,14 +93,16 @@ function drawItem(g, id, r, t, seed) {
       break;
     }
     case 'bomb': case 'cluster_b': {
-      g.strokeStyle = '#8a6a3a'; g.lineWidth = 3; g.beginPath(); g.moveTo(8, -14); g.quadraticCurveTo(16, -24, 12, -28); g.stroke();
-      const gr = g.createRadialGradient(-6, -6, 2, 0, 2, 20); gr.addColorStop(0, '#5d6470'); gr.addColorStop(1, '#111318');
-      g.fillStyle = gr; g.beginPath(); g.arc(0, 2, 18, 0, TAU); g.fill();
-      g.fillStyle = '#2b2f36'; g.fillRect(2, -16, 10, 7);
+      // firework ball: striped paper shell with a sparkling wick
+      g.strokeStyle = '#8a6a3a'; g.lineWidth = 3; g.beginPath(); g.moveTo(0, -16); g.quadraticCurveTo(6, -24, 3, -29); g.stroke();
+      const main = id === 'bomb' ? ['#ff4d6d', '#ffd23f', '#3fa7ff'] : ['#9b5cff', '#4fd36a', '#ffd23f'];
+      g.save(); g.beginPath(); g.arc(0, 2, 18, 0, TAU); g.clip();
+      for (let i = -3; i < 4; i++) { g.fillStyle = main[(i + 3) % 3]; g.fillRect(i * 9 - 4.5, -20, 9, 44); }
+      const sh = g.createRadialGradient(-6, -5, 2, 0, 2, 20); sh.addColorStop(0, 'rgba(255,255,255,.45)'); sh.addColorStop(1, 'rgba(0,0,0,.35)');
+      g.fillStyle = sh; g.fillRect(-20, -20, 40, 44); g.restore();
       const fl = 0.7 + 0.3 * Math.sin((t || 0) * 40);
-      g.fillStyle = '#ffd25a'; g.beginPath(); g.arc(12, -28, 4 * fl, 0, TAU); g.fill();
-      g.fillStyle = '#ff7a2a'; g.beginPath(); g.arc(12, -28, 2.2 * fl, 0, TAU); g.fill();
-      g.fillStyle = 'rgba(255,255,255,.35)'; g.beginPath(); g.ellipse(-7, -5, 5, 3, -0.7, 0, TAU); g.fill();
+      g.fillStyle = '#fff6b0'; for (let i = 0; i < 6; i++) { const a = i / 6 * TAU + (t || 0) * 9; g.fillRect(3 + Math.cos(a) * 6 * fl - 1, -29 + Math.sin(a) * 6 * fl - 1, 2.5, 2.5); }
+      g.fillStyle = '#ffd25a'; g.beginPath(); g.arc(3, -29, 3.5 * fl, 0, TAU); g.fill();
       break;
     }
     case 'anvil': {
@@ -122,20 +124,22 @@ function drawItem(g, id, r, t, seed) {
       break;
     }
     case 'cluster': {
-      g.fillStyle = '#56603a'; g.beginPath(); g.ellipse(0, 0, 13, 22, 0, 0, TAU); g.fill();
-      g.fillStyle = '#3c4428'; g.beginPath(); g.moveTo(-13, -14); g.lineTo(-20, -24); g.lineTo(-6, -20); g.closePath(); g.fill();
-      g.beginPath(); g.moveTo(13, -14); g.lineTo(20, -24); g.lineTo(6, -20); g.closePath(); g.fill();
-      g.fillStyle = '#e6c84a'; g.fillRect(-13, -2, 26, 4);
-      g.fillStyle = 'rgba(255,255,255,.25)'; g.beginPath(); g.ellipse(-5, -6, 3, 9, 0, 0, TAU); g.fill();
+      // party popper cone with confetti
+      g.fillStyle = '#ff7ab6'; g.beginPath(); g.moveTo(-14, -18); g.lineTo(14, -18); g.lineTo(0, 24); g.closePath(); g.fill();
+      g.fillStyle = '#ffd23f'; for (let i = 0; i < 3; i++) { g.beginPath(); g.moveTo(-12 + i * 4, -12 + i * 12); g.lineTo(12 - i * 4, -12 + i * 12); g.lineTo(10 - i * 4, -8 + i * 12); g.lineTo(-10 + i * 4, -8 + i * 12); g.fill(); }
+      const cc = ['#3fa7ff', '#4fd36a', '#ff4d6d', '#ffd23f', '#9b5cff'];
+      for (let i = 0; i < 9; i++) { g.fillStyle = cc[i % 5]; g.fillRect(-14 + i * 3.4, -26 - (i % 3) * 3, 3, 4); }
       break;
     }
     case 'acid': {
-      g.fillStyle = '#3d8f2a'; g.fillRect(-16, -21, 32, 42);
-      g.fillStyle = '#2a6b1c'; g.fillRect(-16, -12, 32, 3); g.fillRect(-16, 9, 32, 3);
-      g.fillStyle = '#f2e14a'; g.beginPath(); g.moveTo(0, -6); g.lineTo(7, 6); g.lineTo(-7, 6); g.closePath(); g.fill();
-      g.fillStyle = '#1b1b1b'; g.fillRect(-1, -2, 2, 5);
-      g.fillStyle = '#9cff5a'; g.beginPath(); g.ellipse(0, -21, 16, 4, 0, 0, TAU); g.fill();
-      g.fillStyle = 'rgba(255,255,255,.2)'; g.fillRect(-12, -21, 4, 42);
+      // bucket full of green slime
+      g.fillStyle = '#7d8ea3'; g.beginPath(); g.moveTo(-18, -16); g.lineTo(18, -16); g.lineTo(13, 20); g.lineTo(-13, 20); g.closePath(); g.fill();
+      g.fillStyle = 'rgba(255,255,255,.25)'; g.fillRect(-12, -14, 4, 32);
+      g.strokeStyle = '#4a5666'; g.lineWidth = 2; g.beginPath(); g.arc(0, -16, 18, Math.PI, 0); g.stroke();
+      g.fillStyle = '#7cf04a'; g.beginPath(); g.ellipse(0, -16, 18, 5, 0, 0, TAU); g.fill();
+      g.beginPath(); g.moveTo(-10, -14); g.quadraticCurveTo(-11, -2, -8, -2); g.quadraticCurveTo(-5, -2, -6, -14); g.fill();
+      g.beginPath(); g.moveTo(6, -14); g.quadraticCurveTo(5, 4, 9, 4); g.quadraticCurveTo(12, 4, 11, -14); g.fill();
+      g.fillStyle = '#c8ff9a'; g.beginPath(); g.arc(-4, -17, 2.5, 0, TAU); g.arc(6, -15, 1.8, 0, TAU); g.fill();
       break;
     }
     case 'drill': {
@@ -148,15 +152,14 @@ function drawItem(g, id, r, t, seed) {
       break;
     }
     case 'cow': {
-      g.fillStyle = '#fafafa'; g.beginPath(); g.ellipse(0, 0, 22, 14, 0, 0, TAU); g.fill();
-      g.fillStyle = '#1d1d1d'; g.beginPath(); g.ellipse(-8, -4, 6, 5, 0.4, 0, TAU); g.ellipse(8, 5, 5, 4, -0.3, 0, TAU); g.fill();
-      g.fillStyle = '#fafafa'; g.beginPath(); g.ellipse(22, -8, 9, 8, 0, 0, TAU); g.fill();
-      g.fillStyle = '#f2a9b8'; g.beginPath(); g.ellipse(28, -5, 5, 4, 0, 0, TAU); g.fill();
-      g.fillStyle = '#1d1d1d'; g.beginPath(); g.arc(21, -11, 1.6, 0, TAU); g.fill();
-      g.fillStyle = '#d9d3c7'; g.beginPath(); g.moveTo(17, -15); g.lineTo(15, -21); g.lineTo(20, -16); g.fill(); g.beginPath(); g.moveTo(24, -15); g.lineTo(27, -21); g.lineTo(27, -14); g.fill();
-      g.fillStyle = '#fafafa'; for (const x of [-15, -6, 6, 15]) g.fillRect(x - 2.5, 10, 5, 10);
-      g.fillStyle = '#1d1d1d'; for (const x of [-15, -6, 6, 15]) g.fillRect(x - 2.5, 18, 5, 3);
-      g.strokeStyle = '#1d1d1d'; g.lineWidth = 1.6; g.beginPath(); g.moveTo(-22, -2); g.quadraticCurveTo(-28, 4, -26, 10); g.stroke();
+      // rubber duck
+      g.fillStyle = '#ffd23f'; g.beginPath(); g.ellipse(-2, 6, 22, 14, 0, 0, TAU); g.fill();
+      g.beginPath(); g.arc(10, -10, 12, 0, TAU); g.fill();
+      g.fillStyle = '#ffb000'; g.beginPath(); g.ellipse(-6, 5, 10, 6, -0.3, 0, TAU); g.fill();
+      g.fillStyle = '#ff8a2a'; g.beginPath(); g.ellipse(23, -7, 7, 3.5, 0.15, 0, TAU); g.fill();
+      g.fillStyle = '#1d1d1d'; g.beginPath(); g.arc(13, -13, 2.2, 0, TAU); g.fill();
+      g.fillStyle = '#fff'; g.beginPath(); g.arc(13.6, -13.8, 0.8, 0, TAU); g.fill();
+      g.fillStyle = 'rgba(255,255,255,.45)'; g.beginPath(); g.ellipse(-10, -1, 7, 3, -0.3, 0, TAU); g.fill();
       break;
     }
     case 'freeze': {
@@ -190,27 +193,35 @@ function drawItem(g, id, r, t, seed) {
       break;
     }
     case 'laser': {
-      g.fillStyle = '#c9d1db'; g.fillRect(-8, -10, 16, 20);
-      g.fillStyle = '#2b5fb8'; g.fillRect(-26, -7, 15, 14); g.fillRect(11, -7, 15, 14);
-      g.strokeStyle = '#7fa6e8'; g.lineWidth = 1; for (const x of [-21, -16, 16, 21]) { g.beginPath(); g.moveTo(x, -7); g.lineTo(x, 7); g.stroke(); }
-      g.fillStyle = '#ff3d3d'; g.beginPath(); g.arc(0, 13, 5, 0, TAU); g.fill();
-      g.fillStyle = 'rgba(255,90,90,.5)'; g.beginPath(); g.arc(0, 13, 8, 0, TAU); g.fill();
+      // magnifying glass
+      g.strokeStyle = '#8a5a2a'; g.lineWidth = 7; g.lineCap = 'round'; g.beginPath(); g.moveTo(12, 12); g.lineTo(24, 24); g.stroke(); g.lineCap = 'butt';
+      g.fillStyle = 'rgba(190,235,255,.75)'; g.beginPath(); g.arc(-3, -3, 16, 0, TAU); g.fill();
+      g.strokeStyle = '#c9a23a'; g.lineWidth = 4; g.stroke();
+      g.fillStyle = 'rgba(255,255,255,.7)'; g.beginPath(); g.ellipse(-9, -9, 5, 3, -0.7, 0, TAU); g.fill();
+      g.fillStyle = '#fff3a0'; g.beginPath(); g.arc(-3, -3, 3, 0, TAU); g.fill();
       break;
     }
     case 'hole': {
-      const gr = g.createRadialGradient(0, 0, 4, 0, 0, 22); gr.addColorStop(0, '#000'); gr.addColorStop(0.55, '#14062a'); gr.addColorStop(0.75, '#9a4dff'); gr.addColorStop(1, 'rgba(154,77,255,0)');
+      // friendly space vacuum: swirling purple portal
+      const gr = g.createRadialGradient(0, 0, 4, 0, 0, 22); gr.addColorStop(0, '#2a1060'); gr.addColorStop(0.6, '#6a3ad0'); gr.addColorStop(0.85, '#c6a0ff'); gr.addColorStop(1, 'rgba(198,160,255,0)');
       g.fillStyle = gr; g.beginPath(); g.arc(0, 0, 22, 0, TAU); g.fill();
-      g.strokeStyle = '#e6c8ff'; g.lineWidth = 2; g.beginPath(); g.ellipse(0, 0, 21, 6, (t || 0) * 2, 0, TAU); g.stroke();
-      g.fillStyle = '#000'; g.beginPath(); g.arc(0, 0, 9, 0, TAU); g.fill();
+      g.strokeStyle = '#f0e0ff'; g.lineWidth = 2;
+      for (let i = 0; i < 3; i++) { g.beginPath(); g.arc(0, 0, 6 + i * 5, (t || 0) * 4 + i, (t || 0) * 4 + i + 2.2); g.stroke(); }
+      g.fillStyle = '#fff'; g.beginPath(); g.arc(0, 0, 3, 0, TAU); g.fill();
       break;
     }
     case 'nuke': {
-      g.fillStyle = '#3e4330';
-      g.beginPath(); g.moveTo(-8, -26); g.lineTo(8, -26); g.lineTo(14, -16); g.lineTo(-14, -16); g.closePath(); g.fill();
-      g.fillStyle = '#d8c23a'; g.beginPath(); g.ellipse(0, 4, 16, 22, 0, 0, TAU); g.fill();
-      g.fillStyle = '#1b1b1b'; g.beginPath(); g.arc(0, 4, 3, 0, TAU); g.fill();
-      for (let i = 0; i < 3; i++) { const a = (i / 3) * TAU - Math.PI / 2; g.beginPath(); g.moveTo(0, 4); g.arc(0, 4, 11, a - 0.5, a + 0.5); g.closePath(); g.fill(); }
-      g.fillStyle = 'rgba(255,255,255,.3)'; g.beginPath(); g.ellipse(-7, -4, 3, 8, 0, 0, TAU); g.fill();
+      // asteroid: big cratered space rock
+      const R = mulberry32(seed || 11);
+      g.beginPath();
+      for (let i = 0; i < 12; i++) { const a = (i / 12) * TAU, rr = 18 + R() * 4; g.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); }
+      g.closePath();
+      const gr = g.createRadialGradient(-6, -7, 2, 0, 0, 24); gr.addColorStop(0, '#b7a9c9'); gr.addColorStop(1, '#4a3f5c');
+      g.fillStyle = gr; g.fill(); g.lineWidth = 2; g.strokeStyle = '#2e2640'; g.stroke();
+      g.fillStyle = 'rgba(40,30,60,.55)';
+      for (const [x, y, r] of [[-6, -5, 5], [7, 3, 4], [-3, 9, 3], [8, -8, 2.5]]) { g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill(); }
+      g.fillStyle = 'rgba(255,255,255,.25)';
+      for (const [x, y, r] of [[-7, -6, 2], [6, 2, 1.5]]) { g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill(); }
       break;
     }
   }

@@ -25,6 +25,7 @@ const UI = {
     $('btnPlay').addEventListener('click', () => this.play());
     $('btnNext').addEventListener('click', () => this.next(false));
     $('btnX2').addEventListener('click', () => this.next(true));
+    $('orderOk').addEventListener('click', () => { Audio2.init(); Audio2.click(); this.close('order'); G.startLevel(G.level); });
     $('unlockOk').addEventListener('click', () => { Audio2.click(); this.close('unlock'); if (this._afterUnlock) { const f = this._afterUnlock; this._afterUnlock = null; f(); } });
     window.addEventListener('resize', () => this.measure());
     this.buildBar();
@@ -46,7 +47,9 @@ const UI = {
     $('unlockOk').textContent = T('cool');
     $('hintText').textContent = T('hint');
     if (LANG !== 'ru') { $('logo1').textContent = 'DROP'; $('logo2').textContent = '& SMASH'; document.title = 'Drop & Smash'; }
-    $('logoSub').textContent = LANG === 'ru' ? 'ЛОМАЙ ВСЁ СВЕРХУ' : 'BREAK IT FROM ABOVE';
+    $('logoSub').textContent = T('crew');
+    $('orderOk').textContent = T('take');
+    $('orderPlanLbl').textContent = T('planLbl');
   },
 
   measure() {
@@ -177,7 +180,7 @@ const UI = {
   play() {
     Audio2.init(); Audio2.click();
     this.close('title');
-    G.startLevel(SAVE.level);
+    this.showOrder(SAVE.level);
   },
 
   /* ---------- win ---------- */
@@ -196,6 +199,8 @@ const UI = {
       `<div><span>${T('reward')}</span><b>${fmt(base)} ${coin}</b></div>` +
       (fast ? `<div><span>${T('bonusFast')} (&lt;${par}s)</span><b>+${fmt(fast)} ${coin}</b></div>` : '') +
       `<div class="total"><span>${T('total')}</span><b id="winTotal">0 ${coin}</b></div>`;
+    const nx = document.getElementById('winNext') || (() => { const d = document.createElement('div'); d.id = 'winNext'; d.className = 'win-next'; $('winStats').before(d); return d; })();
+    nx.innerHTML = `${T('built')} <b>${L(STORY[G.info.idx].next)}</b>`;
     $('btnX2').innerHTML = `▶ ${T('x2')}`;
     $('btnX2').disabled = false;
     this.open('win');
@@ -234,7 +239,7 @@ const UI = {
     newItems.forEach((d) => { if (SAVE.items[d.id] === undefined) SAVE.items[d.id] = 0; });
     saveGame(true);
     const go = () => {
-      G.startLevel(SAVE.level);
+      this.showOrder(SAVE.level);
       if (targetForLevel(SAVE.level).world !== prevWorld) this.toast(T('worldNew'), L(WORLDS[targetForLevel(SAVE.level).world].name));
     };
     const afterAd = () => {
@@ -242,6 +247,18 @@ const UI = {
       else go();
     };
     if (SAVE.level % 2 === 1 && SAVE.level > 3) SDK.showFullscreen(afterAd); else afterAd();
+  },
+  /* job card: who asked for the demolition and what will be built */
+  showOrder(level) {
+    G.preview(level);
+    const info = G.info, st = STORY[info.idx], cl = CLIENTS[info.world];
+    $('orderTitle').textContent = T('order') + level;
+    $('orderTarget').textContent = L(info.def.name);
+    const av = $('orderAvatar'); av.textContent = L(cl.letter); av.style.background = cl.color;
+    $('orderClient').textContent = L(cl.name);
+    $('orderWhy').textContent = L(st.why);
+    $('orderNext').textContent = L(st.next);
+    this.open('order');
   },
   showUnlock(d, then) {
     this._afterUnlock = () => { this.select(d.id); then(); };
@@ -337,7 +354,7 @@ const UI = {
       saveGame(true);
       G.cd = {};
       this.close('settings');
-      G.startLevel(1);
+      this.showOrder(1);
     });
   },
 };

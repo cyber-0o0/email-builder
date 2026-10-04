@@ -186,7 +186,7 @@ button:focus-visible { outline: 3px solid var(--hazard); outline-offset: 2px; }
 .logo { text-align: center; font-family: var(--display); line-height: .9; transform: rotate(-4deg); margin-bottom: 26px; }
 .logo span { display: block; font-size: clamp(54px, 15vw, 104px); color: var(--hazard); text-shadow: 0 6px 0 var(--hazard-dk), 0 12px 0 rgba(0,0,0,.35); letter-spacing: .02em; }
 .logo span + span { color: var(--cream); text-shadow: 0 6px 0 #9b8e70, 0 12px 0 rgba(0,0,0,.35); margin-left: .5em; }
-.logo em { display: block; font-style: normal; font-size: clamp(13px, 3.4vw, 17px); letter-spacing: .3em; color: var(--cream); margin-top: 18px; transform: rotate(4deg); opacity: .85; }
+.logo em { display: block; font-style: normal; font-size: clamp(11px, 3vw, 15px); letter-spacing: .12em; max-width: 90vw; margin-inline: auto; line-height: 1.4; color: var(--cream); margin-top: 18px; transform: rotate(4deg); opacity: .85; }
 .title-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
 .title-wrap .btn { height: 66px; font-size: 26px; padding: 0 44px; animation: breathe 1.6s ease-in-out infinite; }
 @keyframes breathe { 50% { transform: scale(1.06); } }
@@ -222,6 +222,16 @@ button:focus-visible { outline: 3px solid var(--hazard); outline-offset: 2px; }
 .srow.locked canvas { filter: brightness(0) opacity(.5); }
 .free-coins { display: flex; justify-content: space-between; align-items: center; gap: 10px; background: linear-gradient(90deg, #3b2a6b, var(--panel-2)); padding: 10px 12px; border-radius: 14px; margin-bottom: 12px; }
 .free-coins .btn { height: 42px; font-size: 14px; }
+
+/* order (story) */
+.client { display: grid; grid-template-columns: 56px 1fr; gap: 12px; align-items: start; margin-bottom: 14px; }
+.avatar { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; font-family: var(--display); font-style: normal; font-size: 26px; color: var(--ink); box-shadow: 0 4px 0 rgba(0,0,0,.35), inset 0 -6px 0 rgba(0,0,0,.15); }
+.client b { font-family: var(--display); font-weight: 400; font-size: 16px; color: var(--hazard); }
+.client p { position: relative; margin: 6px 0 0; padding: 10px 12px; background: var(--panel-2); border-radius: 4px 14px 14px 14px; font-size: 15px; line-height: 1.4; }
+.plan { display: flex; justify-content: space-between; align-items: center; gap: 10px; background: var(--ink); border-radius: 12px; padding: 10px 12px; margin-bottom: 16px; font-size: 14px; color: var(--muted); }
+.plan b { color: var(--good); font-family: var(--display); font-weight: 400; font-size: 16px; text-align: right; }
+.win-next { text-align: center; margin: -4px 0 12px; font-size: 15px; color: var(--muted); }
+.win-next b { color: var(--good); font-family: var(--display); font-weight: 400; }
 
 /* settings */
 .set-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 4px; border-bottom: 1px solid rgba(255,255,255,.07); font-size: 16px; }
@@ -278,6 +288,17 @@ button:focus-visible { outline: 3px solid var(--hazard); outline-offset: 2px; }
     <div class="logo"><span id="logo1">СБРОС</span><span id="logo2">И СНОС</span><em id="logoSub"></em></div>
     <button class="btn yellow" id="btnPlay"><span class="play-ico"></span><span id="playLbl"></span></button>
     <div class="title-meta" id="titleMeta"></div>
+  </div>
+</div>
+
+<div class="screen" id="order" hidden>
+  <div class="panel">
+    <div class="panel-head"><h2 id="orderTitle"></h2><div class="win-target" id="orderTarget"></div></div>
+    <div class="panel-body">
+      <div class="client"><i class="avatar" id="orderAvatar"></i><div><b id="orderClient"></b><p id="orderWhy"></p></div></div>
+      <div class="plan"><span id="orderPlanLbl"></span><b id="orderNext"></b></div>
+      <div class="center"><button class="btn yellow" id="orderOk"></button></div>
+    </div>
   </div>
 </div>
 
@@ -473,7 +494,7 @@ let LANG = 'ru';
 const STR = {
   ru: {
     play: 'Играть', tapToStart: 'Нажми, чтобы начать', level: 'Уровень', boss: 'БОСС',
-    destroyed: 'РАЗРУШЕНО!', reward: 'Награда', next: 'Дальше', x2: 'x2 за рекламу',
+    destroyed: 'ГОТОВО!', reward: 'Награда', next: 'Дальше', x2: 'x2 за рекламу',
     shop: 'Мастерская', items: 'Предметы', upgrades: 'Улучшения', settings: 'Настройки',
     sound: 'Звуки', music: 'Музыка', vibro: 'Вибрация', close: 'Закрыть', on: 'Вкл', off: 'Выкл',
     dmg: 'Урон', cd: 'Перезарядка', lvlShort: 'ур.', unlockAt: 'Откроется на уровне', max: 'МАКС',
@@ -482,14 +503,15 @@ const STR = {
     combo: 'КОМБО', crit: 'КРИТ!', time: 'Время', bonusFast: 'Бонус за скорость', coinsLoot: 'Добыча',
     total: 'Итого', notReady: 'Перезарядка', resetProgress: 'Сбросить прогресс', confirmReset: 'Точно? Нажми ещё раз',
     worldNew: 'Новый мир', freeCoins: 'Монеты за рекламу', get: 'Получить',
-    drone: 'Дрон-бомбардир', droneDesc: 'Сам сбрасывает камни', power: 'Сила удара', powerDesc: 'Урон всех предметов',
+    drone: 'Дрон-помощник', droneDesc: 'Сам сбрасывает камни', power: 'Сила удара', powerDesc: 'Урон всех предметов',
     greed: 'Жадность', greedDesc: 'Больше монет', speed: 'Механика', speedDesc: 'Быстрее перезарядка',
     critU: 'Точность', critDesc: 'Шанс крита x3', buy: 'Купить', locked: 'Закрыто', paused: 'Пауза',
     sel: 'Выбрано', record: 'Рекорд',
+    order: 'Заказ №', take: 'Взяться за работу!', planLbl: 'Потом здесь будет:', built: 'Готово! Здесь появится:', crew: 'БРИГАДА СНОСА: УБИРАЕМ СТАРОЕ, СТРОИМ НОВОЕ', done: 'ГОТОВО!',
   },
   en: {
     play: 'Play', tapToStart: 'Tap to start', level: 'Level', boss: 'BOSS',
-    destroyed: 'DESTROYED!', reward: 'Reward', next: 'Next', x2: 'x2 for ad',
+    destroyed: 'JOB DONE!', reward: 'Reward', next: 'Next', x2: 'x2 for ad',
     shop: 'Workshop', items: 'Items', upgrades: 'Upgrades', settings: 'Settings',
     sound: 'Sounds', music: 'Music', vibro: 'Vibration', close: 'Close', on: 'On', off: 'Off',
     dmg: 'Damage', cd: 'Cooldown', lvlShort: 'lv.', unlockAt: 'Unlocks at level', max: 'MAX',
@@ -498,10 +520,11 @@ const STR = {
     combo: 'COMBO', crit: 'CRIT!', time: 'Time', bonusFast: 'Speed bonus', coinsLoot: 'Loot',
     total: 'Total', notReady: 'Reloading', resetProgress: 'Reset progress', confirmReset: 'Sure? Tap again',
     worldNew: 'New world', freeCoins: 'Coins for ad', get: 'Get',
-    drone: 'Bomber drone', droneDesc: 'Drops rocks on its own', power: 'Impact power', powerDesc: 'Damage of all items',
+    drone: 'Helper drone', droneDesc: 'Drops rocks on its own', power: 'Impact power', powerDesc: 'Damage of all items',
     greed: 'Greed', greedDesc: 'More coins', speed: 'Mechanics', speedDesc: 'Faster reload',
     critU: 'Precision', critDesc: 'x3 crit chance', buy: 'Buy', locked: 'Locked', paused: 'Paused',
     sel: 'Selected', record: 'Best',
+    order: 'Job #', take: 'Take the job!', planLbl: 'What comes next:', built: 'Done! Coming here:', crew: 'DEMOLITION CREW: CLEAR THE OLD, BUILD THE NEW', done: 'DONE!',
   },
 };
 const T = (k) => (STR[LANG] && STR[LANG][k]) || STR.ru[k] || k;
@@ -776,14 +799,10 @@ const Audio2 = {
     if (!this.ok('whistle', 0.2)) return;
     this.tone({ f: 1600, f2: 500, dur, slide: dur, g: 0.07, type: 'sine', a: 0.05 });
   },
-  moo() {
-    if (!this.ok('moo', 0.4)) return;
-    const c = this.ctx; const t = c.currentTime;
-    const o = c.createOscillator(); o.type = 'sawtooth';
-    o.frequency.setValueAtTime(150, t); o.frequency.linearRampToValueAtTime(175, t + 0.25); o.frequency.linearRampToValueAtTime(120, t + 0.9);
-    const f = c.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 3; f.frequency.setValueAtTime(500, t); f.frequency.linearRampToValueAtTime(900, t + 0.3); f.frequency.linearRampToValueAtTime(400, t + 0.9);
-    const g = c.createGain(); this._env(g, t, 0.08, 0.9, 0.35);
-    o.connect(f); f.connect(g); g.connect(this.sfx); o.start(t); o.stop(t + 1.1);
+  squeak() {
+    if (!this.ok('squeak', 0.3)) return;
+    this.tone({ f: 1300, f2: 1900, dur: 0.12, slide: 0.08, g: 0.12, type: 'square', lp: 3500 });
+    this.tone({ f: 1800, f2: 1100, dur: 0.18, slide: 0.15, g: 0.1, type: 'square', lp: 3500, delay: 0.1 });
   },
   piano() {
     if (!this.ok('piano', 0.2)) return;
@@ -976,9 +995,10 @@ function makeTex(id) {
       }
       if (R() < 2) { g.fillStyle = dark; g.globalAlpha = 0.5; g.beginPath(); g.ellipse(R() * S, R() * S, 4, 2.5, 0, 0, TAU); g.fill(); g.globalAlpha = 1; }
       if (id === 'tnt') {
-        g.fillStyle = '#2a0b08'; g.globalAlpha = 0.85; g.fillRect(0, 40, S, 48); g.globalAlpha = 1;
-        g.fillStyle = '#ffe9c9'; g.font = '900 30px Arial Black, Impact, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
-        g.fillText('TNT', 64, 66);
+        // fireworks crate: a band of stars
+        
+        const star = (cx, cy, r, col) => { g.fillStyle = col; g.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * 0.45 : r; g.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr); } g.closePath(); g.fill(); };
+        star(22, 64, 13, '#ffd23f'); star(64, 64, 15, '#fff3c4'); star(106, 64, 13, '#ffd23f');
       }
       break;
     }
@@ -1221,36 +1241,34 @@ const TARGETS = [
     R_(-5, 140, 10, 85, 'steel'),
     R_(-110, 225, 220, 18, 'metal'),
   ] },
-  { name: { ru: 'Сейф банка', en: 'Bank Vault' }, build: () => [
-    R_(-170, 0, 340, 40, 'steel'),
-    R_(-170, 40, 40, 260, 'steel'), R_(130, 40, 40, 260, 'steel'), R_(-170, 300, 340, 40, 'steel'),
+  { name: { ru: 'Сундук с сокровищами', en: 'Treasure Chest' }, build: () => [
+    R_(-170, 0, 340, 40, 'plank'),
+    R_(-170, 40, 40, 260, 'plank'), R_(130, 40, 40, 260, 'plank'), R_(-170, 300, 340, 40, 'plank'),
     ...grid(-129, 40, 5, 6, 50, 40, 2, 2).map(([x, y, w, h]) => R_(x, y, w, h, 'gold')),
-    R_(-130, 290, 260, 10, 'steel'),
+    R_(-130, 290, 260, 10, 'plank'),
+    D_(0, 340, 170, 70, 'redwood', 14),
+    R_(-20, 300, 40, 50, 'gold'),
   ] },
-  { name: { ru: 'Многоэтажка', en: 'Apartment Block' }, build: () => [
-    ...WALL_(-160, 0, 320, 540, 'concrete', grid(-135, 40, 4, 7, 50, 50, 26, 22)),
-    R_(-170, 540, 340, 20, 'steel'),
-    R_(40, 560, 70, 60, 'metal'),
+  { name: { ru: 'Старый склад', en: 'Old Warehouse' }, build: () => [
+    ...WALL_(-250, 0, 500, 260, 'brick', [[-210, 140, 70, 60], [-110, 140, 70, 60], [40, 140, 70, 60], [140, 140, 70, 60], [-60, 0, 120, 150, 'metal']]),
+    P_([[-265, 260], [265, 260], [200, 340], [-200, 340]], 'metal'),
+    R_(120, 340, 40, 90, 'brick'),
   ] },
-  { name: { ru: 'Стеклянная башня', en: 'Glass Tower' }, build: () => [
-    R_(-120, 0, 240, 40, 'concrete'),
-    ...WALL_(-110, 40, 220, 560, 'steel', grid(-100, 50, 4, 10, 44, 46, 8, 8)),
-    P_([[-110, 600], [110, 600], [0, 680]], 'glass'),
-    R_(-4, 680, 8, 60, 'steel'),
+  { name: { ru: 'Рекламный щит', en: 'Billboard' }, build: () => [
+    R_(-150, 0, 30, 280, 'steel'), R_(120, 0, 30, 280, 'steel'),
+    R_(-120, 120, 240, 14, 'metal'),
+    R_(-260, 280, 520, 210, 'hull'),
+    R_(-240, 300, 480, 40, 'redwood'), R_(-240, 360, 300, 30, 'crystal'), R_(-240, 410, 200, 60, 'gold'),
+    R_(-260, 490, 520, 12, 'steel'),
   ] },
-  { name: { ru: 'Памятник', en: 'Monument' }, boss: true, build: () => [
-    R_(-150, 0, 300, 50, 'stone'),
-    R_(-110, 50, 220, 170, 'marble'),
-    R_(-130, 220, 260, 25, 'stone'),
-    // statue
-    R_(-50, 245, 35, 150, 'steel'), R_(15, 245, 35, 150, 'steel'),
-    P_([[-60, 395], [60, 395], [70, 560], [-70, 560]], 'steel'),
-    ROT_(-117, 595, 30, 140, 0.86, 'steel'),
-    ROT_(82, 495, 28, 115, 0.3, 'steel'),
-    C_(0, 602, 42, 'steel', 18),
-    P_([[-188, 632], [-152, 642], [-180, 700]], 'gold'),
+  { name: { ru: 'Подъёмный кран', en: 'Tower Crane' }, boss: true, build: () => [
+    R_(-130, 0, 260, 50, 'concrete'),
+    ...WALL_(-35, 50, 70, 520, 'metal', [[-25, 90, 50, 40, 'gold'], [-25, 200, 50, 40, 'gold'], [-25, 310, 50, 40, 'gold'], [-25, 420, 50, 40, 'gold']]),
+    R_(-55, 570, 110, 60, 'glass'),
+    R_(-260, 630, 560, 30, 'metal'),
+    R_(-250, 590, 70, 40, 'concrete'),
+    R_(240, 560, 6, 70, 'steel'), R_(225, 530, 36, 30, 'hull'),
   ] },
-
   /* ---------- DESERT ---------- */
   { name: { ru: 'Глиняная хижина', en: 'Adobe Hut' }, build: () => [
     ...WALL_(-160, 0, 320, 180, 'clay', [[-30, 0, 60, 110, 'plank'], [-125, 80, 50, 45, 'plank'], [75, 80, 50, 45, 'plank']]),
@@ -1264,44 +1282,44 @@ const TARGETS = [
     R_(45, 300, 110, 55, 'plant'), R_(100, 355, 55, 130, 'plant'), D_(127.5, 485, 27.5, 26, 'plant'),
     C_(0, 615, 18, 'carrot', 10),
   ] },
-  { name: { ru: 'Обелиск', en: 'Obelisk' }, build: () => [
-    R_(-130, 0, 260, 50, 'sandstone'),
-    R_(-100, 50, 200, 30, 'sandstone'),
-    P_([[-70, 80], [70, 80], [48, 600], [-48, 600]], 'sandstone'),
-    P_([[-48, 600], [48, 600], [0, 670]], 'gold'),
+  { name: { ru: 'Песочные часы', en: 'Hourglass' }, build: () => [
+    R_(-150, 0, 300, 40, 'wood'),
+    R_(-140, 40, 24, 440, 'wood'), R_(116, 40, 24, 440, 'wood'),
+    P_([[-116, 40], [116, 40], [8, 250], [-8, 250]], 'sandstone'),
+    P_([[-8, 250], [8, 250], [116, 460], [-116, 460]], 'glass'),
+    R_(-116, 460, 232, 20, 'wood'),
+    R_(-150, 480, 300, 40, 'wood'),
   ] },
-  { name: { ru: 'Храм', en: 'Temple' }, build: () => [
-    R_(-250, 0, 500, 40, 'sandstone'),
-    ...[-215, -115, -15, 85, 185].map((x) => R_(x, 40, 30, 260, 'marble')),
-    R_(-250, 300, 500, 40, 'sandstone'),
-    P_([[-260, 340], [260, 340], [0, 440]], 'sandstone'),
-    C_(0, 380, 22, 'gold', 14),
+  { name: { ru: 'Песчаный замок', en: 'Sandcastle' }, build: () => [
+    R_(-240, 0, 480, 40, 'sandstone'),
+    ...WALL_(-220, 40, 100, 300, 'sandstone', [[-195, 220, 50, 50, 'clay']]),
+    ...WALL_(120, 40, 100, 300, 'sandstone', [[145, 220, 50, 50, 'clay']]),
+    ...WALL_(-120, 40, 240, 200, 'sandstone', [[-40, 40, 80, 110, 'plank']]),
+    ...[-220, -183, -146].map((x) => R_(x + 2, 340, 30, 32, 'sandstone')),
+    ...[122, 159, 196].map((x) => R_(x + 2, 340, 30, 32, 'sandstone')),
+    D_(0, 240, 110, 120, 'sandstone', 14),
+    R_(-4, 360, 8, 70, 'wood'), P_([[4, 400], [60, 412], [4, 428]], 'redwood'),
   ] },
-  { name: { ru: 'Сфинкс', en: 'Sphinx' }, build: () => [
-    R_(-260, 0, 520, 40, 'sandstone'),
-    P_([[-240, 40], [120, 40], [140, 170], [-200, 150]], 'sandstone'),
-    R_(110, 40, 140, 45, 'sandstone'),
-    P_([[90, 170], [210, 170], [215, 320], [85, 320]], 'sandstone'),
-    P_([[70, 175], [90, 175], [85, 320], [60, 290]], 'gold'), P_([[210, 175], [232, 175], [240, 290], [215, 320]], 'gold'),
-    P_([[85, 320], [215, 320], [195, 380], [105, 380]], 'gold'),
-    P_([[-240, 40], [-200, 150], [-262, 120]], 'sandstone'),
+  { name: { ru: 'Оазис', en: 'Oasis' }, build: () => [
+    ...WALL_(-260, 0, 200, 90, 'stone', [[-230, 30, 140, 40, 'ice']]),
+    R_(-260, 90, 20, 100, 'wood'), R_(-80, 90, 20, 100, 'wood'), P_([[-280, 190], [-40, 190], [-160, 250]], 'roof'),
+    P_([[40, 0], [80, 0], [90, 200], [60, 200]], 'wood'),
+    P_([[60, 200], [90, 200], [110, 400], [80, 400]], 'wood'),
+    P_([[80, 400], [110, 400], [250, 340], [230, 320]], 'plant'),
+    P_([[80, 400], [110, 400], [-40, 350], [-30, 330]], 'plant'),
+    P_([[85, 400], [105, 400], [170, 470], [150, 480]], 'plant'),
+    P_([[85, 400], [105, 400], [30, 480], [15, 470]], 'plant'),
+    C_(95, 395, 18, 'clay', 10),
   ] },
-  { name: { ru: 'Пирамида', en: 'Pyramid' }, boss: true, build: () => {
+  { name: { ru: 'Пирамида из ящиков', en: 'Crate Pyramid' }, boss: true, build: () => {
     const out = [];
-    const rows = 7, H = 75;
-    for (let i = 0; i < rows; i++) {
-      const w0 = 560 - i * 75, w1 = 560 - (i + 1) * 75;
-      const y0 = i * H, y1 = (i + 1) * H;
-      if (i === 2) {
-        out.push(P_([[-w0 / 2, y0], [-45, y0], [-45, y1], [-w1 / 2, y1]], 'sandstone'));
-        out.push(R_(-45, y0, 90, H, 'tnt'));
-        out.push(P_([[45, y0], [w0 / 2, y0], [w1 / 2, y1], [45, y1]], 'sandstone'));
-      } else out.push(P_([[-w0 / 2, y0], [w0 / 2, y0], [w1 / 2, y1], [-w1 / 2, y1]], 'sandstone'));
+    const W = 80, H = 70;
+    for (let r = 0; r < 6; r++) {
+      const n = 6 - r, x0 = -(n * W) / 2;
+      for (let i = 0; i < n; i++) out.push(R_(x0 + i * W, r * H, W, H, r === 2 && i === 1 ? 'tnt' : (i + r) % 2 ? 'plank' : 'wood'));
     }
-    out.push(P_([[-17.5, rows * H], [17.5, rows * H], [0, rows * H + 30]], 'gold'));
     return out;
   } },
-
   /* ---------- ICE ---------- */
   { name: { ru: 'Снеговик', en: 'Snowman' }, build: () => [
     C_(0, 120, 125, 'snow', 26),
@@ -1430,6 +1448,56 @@ function levelReward(level) {
   return Math.round(28 * growth(level) * (t.boss ? 2.5 : 1));
 }
 
+/* ---- story.js ---- */
+'use strict';
+/* ===== Story: we are a friendly demolition crew. Every target is an old,
+   unsafe or unwanted structure; the client explains why it has to go and
+   the win screen shows what will be built in its place. ===== */
+const CLIENTS = [
+  { name: { ru: 'Фермер Петрович', en: 'Farmer Pete' }, color: '#7cb342', letter: { ru: 'П', en: 'P' } },
+  { name: { ru: 'Мэр Васильева', en: 'Mayor Vasquez' }, color: '#5c8df6', letter: { ru: 'В', en: 'V' } },
+  { name: { ru: 'Караванщик Али', en: 'Ali the Trader' }, color: '#f0a040', letter: { ru: 'А', en: 'A' } },
+  { name: { ru: 'Полярница Оля', en: 'Polar Explorer Olga' }, color: '#5ec8e8', letter: { ru: 'О', en: 'O' } },
+  { name: { ru: 'Пришелец Глорп', en: 'Glorp the Alien' }, color: '#37e0b0', letter: { ru: 'Г', en: 'G' } },
+];
+const STORY = [
+  // village
+  { why: { ru: 'Сарай совсем прогнил и вот-вот рухнет сам. Снесите его аккуратно, тут будет огород!', en: 'The shed has rotted through and could fall any day. Take it down, we are planting a garden here!' }, next: { ru: 'Огород с тыквами', en: 'A pumpkin garden' } },
+  { why: { ru: 'Прошлогоднее сено отсырело. Разметайте стог, освободим место под новый урожай.', en: 'Last year\'s hay got damp. Scatter the stack to make room for the new harvest.' }, next: { ru: 'Свежий стог', en: 'A fresh haystack' } },
+  { why: { ru: 'В этом доме давно никто не живёт, крыша течёт. Построим на его месте новый.', en: 'Nobody has lived here for years and the roof leaks. We will build a new home instead.' }, next: { ru: 'Новый уютный дом', en: 'A cozy new house' } },
+  { why: { ru: 'Старая мельница сломалась ещё при дедушке. Нужно место для новой, современной.', en: 'The old mill broke back in grandpa\'s day. We need room for a modern one.' }, next: { ru: 'Ветряная электростанция', en: 'A wind turbine' } },
+  { why: { ru: 'Водонапорная башня проржавела. Скоро проведём водопровод, она больше не нужна.', en: 'The water tower is all rust. Pipes are coming soon, so we no longer need it.' }, next: { ru: 'Детская площадка', en: 'A playground' } },
+  { why: { ru: 'Большая старая ферма. Разберите её целиком, и деревня построит новую, светлую!', en: 'The big old farm. Take it all down and the village will build a bright new one!' }, next: { ru: 'Новая ферма', en: 'A brand-new farm' } },
+  // city
+  { why: { ru: 'Этот киоск закрыт уже десять лет. Освободите тротуар для пешеходов.', en: 'This kiosk has been closed for ten years. Clear the sidewalk for people.' }, next: { ru: 'Цветочная клумба', en: 'A flower bed' } },
+  { why: { ru: 'Брошенная машина без колёс и хозяина. Отправим её на переработку!', en: 'An abandoned car with no owner. Off to recycling!' }, next: { ru: 'Велопарковка', en: 'A bike rack' } },
+  { why: { ru: 'Нашли старый сундук с монетами, но замок заржавел. Вскройте его, монеты пойдут на новый парк!', en: 'We found an old chest of coins, but the lock rusted shut. Open it up, the coins will pay for a park!' }, next: { ru: 'Городской парк', en: 'A city park' } },
+  { why: { ru: 'Склад пустует много лет и стал аварийным. На его месте будет спортплощадка.', en: 'The warehouse has stood empty for years and is unsafe. A sports ground goes here.' }, next: { ru: 'Спортплощадка', en: 'A sports ground' } },
+  { why: { ru: 'Огромный рекламный щит закрывает всем вид на закат. Уберите его!', en: 'The huge billboard blocks everyone\'s sunset view. Take it down!' }, next: { ru: 'Вид на закат', en: 'A sunset view' } },
+  { why: { ru: 'Стройка закончилась, а старый кран остался. Разберите его, пора открывать новый район!', en: 'Construction is over, but the old crane is still here. Take it apart, the new district opens soon!' }, next: { ru: 'Новый район', en: 'A new neighborhood' } },
+  // desert
+  { why: { ru: 'Глиняную хижину размыло редким дождём. Поставим на её месте прочный дом.', en: 'A rare rain washed the clay hut out. We will put a sturdy house here.' }, next: { ru: 'Каменный дом', en: 'A stone house' } },
+  { why: { ru: 'Это не настоящий кактус, а старая декорация из фанеры для кино. Она мешает каравану.', en: 'It is not a real cactus but an old movie prop. It blocks the caravan road.' }, next: { ru: 'Караванная тропа', en: 'A caravan road' } },
+  { why: { ru: 'Гигантские песочные часы для фестиваля. Праздник окончен, пора разбирать!', en: 'Giant festival hourglass. The party is over, time to take it down!' }, next: { ru: 'Площадь для ярмарки', en: 'A market square' } },
+  { why: { ru: 'Конкурс песчаных замков окончен. Сломайте замок, завтра строим новый, ещё больше!', en: 'The sandcastle contest is over. Knock it down, tomorrow we build an even bigger one!' }, next: { ru: 'Новый песчаный замок', en: 'A new sandcastle' } },
+  { why: { ru: 'Старый колодец высох, а пальма засохла. Расчистите место, выроем новый колодец.', en: 'The old well dried up and the palm withered. Clear the spot for a new well.' }, next: { ru: 'Новый колодец', en: 'A new well' } },
+  { why: { ru: 'Караван оставил гору пустых ящиков. Разберите её, и дорога снова свободна!', en: 'A caravan left a mountain of empty crates. Clear it and the road is open again!' }, next: { ru: 'Свободная дорога', en: 'A clear road' } },
+  // ice
+  { why: { ru: 'Пришла весна, снеговику пора на покой. Не грусти, следующей зимой слепим нового!', en: 'Spring is here and the snowman can retire. Next winter we will build a new one!' }, next: { ru: 'Весенняя поляна', en: 'A spring meadow' } },
+  { why: { ru: 'Иглу начало таять и стало опасным. Построим тёплый домик для полярников.', en: 'The igloo is melting and unsafe. We will build a warm hut for the explorers.' }, next: { ru: 'Тёплый домик', en: 'A warm hut' } },
+  { why: { ru: 'Старый маяк заменили новым, автоматическим. Этот можно разобрать.', en: 'The old lighthouse was replaced by an automatic one. This one can go.' }, next: { ru: 'Смотровая площадка', en: 'A lookout deck' } },
+  { why: { ru: 'Пустой корабль вмёрз в лёд сто лет назад. Разберите его, доски пойдут на причал.', en: 'This empty ship froze in a century ago. Its planks will build a new pier.' }, next: { ru: 'Новый причал', en: 'A new pier' } },
+  { why: { ru: 'Ледяная скульптура с прошлого фестиваля треснула. Освободите место для новой.', en: 'Last festival\'s ice sculpture cracked. Make room for a new one.' }, next: { ru: 'Новая скульптура', en: 'A new sculpture' } },
+  { why: { ru: 'Ледяной замок с зимнего праздника. Праздник прошёл, разберите его до весны!', en: 'The ice castle from the winter fair. The fair is over, take it down before spring!' }, next: { ru: 'Каток', en: 'An ice rink' } },
+  // moon
+  { why: { ru: 'Глорп купил новый луноход. Старый сломан, помогите его разобрать!', en: 'Glorp bought a new rover. The old one is broken, help take it apart!' }, next: { ru: 'Гараж для лунохода', en: 'A rover garage' } },
+  { why: { ru: 'Эта ракета-макет из музея не летает. Освободите стартовую площадку для настоящей!', en: 'This museum mock rocket cannot fly. Clear the launch pad for a real one!' }, next: { ru: 'Стартовая площадка', en: 'A launch pad' } },
+  { why: { ru: 'Старый робот-уборщик сломался. Разберите его, детали пойдут на нового.', en: 'The old cleaning robot broke down. Its parts will build a new one.' }, next: { ru: 'Новый робот-помощник', en: 'A new helper robot' } },
+  { why: { ru: 'Антенна больше не ловит сигнал. Поставим на её место телескоп!', en: 'The antenna lost its signal for good. A telescope goes here!' }, next: { ru: 'Телескоп', en: 'A telescope' } },
+  { why: { ru: 'Это мой старый НЛО. Я переезжаю, а он не заводится. Поможете?', en: 'This is my old UFO. I am moving and it will not start. Can you help?' }, next: { ru: 'Лунный сад', en: 'A moon garden' } },
+  { why: { ru: 'Старая база пришельцев опустела, все переехали в новую. Разберите её, тут будет лунный парк!', en: 'The old alien base is empty, everyone moved out. Take it down, a moon park goes here!' }, next: { ru: 'Лунный парк развлечений', en: 'A moon amusement park' } },
+];
+
 /* ---- items.js ---- */
 'use strict';
 /* ===== Droppable items ===== */
@@ -1441,20 +1509,20 @@ const ITEMS = [
     unlock: 2, cost: 20, kind: 'impact', dmg: 15, aoe: 50, r: 17, mass: 1.5, cd: 0.5, pierce: 0.3, bounce: 0.2 },
   { id: 'bowling', name: { ru: 'Шар для боулинга', en: 'Bowling Ball' }, desc: { ru: 'Катится и добивает', en: 'Rolls and keeps hitting' },
     unlock: 3, cost: 35, kind: 'impact', dmg: 26, aoe: 52, r: 21, mass: 3, cd: 0.9, pierce: 0.55, bounce: 0.3 },
-  { id: 'bomb', name: { ru: 'Бомба', en: 'Bomb' }, desc: { ru: 'Взрыв по площади', en: 'Area explosion' },
-    unlock: 4, cost: 55, kind: 'explode', dmg: 42, aoe: 115, r: 20, mass: 2, cd: 2.2, whistle: true },
+  { id: 'bomb', name: { ru: 'Фейерверк', en: 'Firework' }, desc: { ru: 'Лопается ярким салютом', en: 'Pops into a bright salute' },
+    unlock: 4, cost: 55, kind: 'explode', dmg: 42, aoe: 115, r: 20, mass: 2, cd: 2.2, whistle: true, party: true },
   { id: 'anvil', name: { ru: 'Наковальня', en: 'Anvil' }, desc: { ru: 'Пробивает насквозь', en: 'Punches straight through' },
     unlock: 5, cost: 80, kind: 'impact', dmg: 55, aoe: 60, r: 25, mass: 8, cd: 1.6, pierce: 0.88, bounce: 0.05 },
   { id: 'piano', name: { ru: 'Пианино', en: 'Piano' }, desc: { ru: 'Музыкальный урон', en: 'Musical damage' },
     unlock: 6, cost: 120, kind: 'impact', dmg: 85, aoe: 90, r: 33, mass: 9, cd: 3, pierce: 0.6, bounce: 0.1, breaks: true },
-  { id: 'cluster', name: { ru: 'Кассетная бомба', en: 'Cluster Bomb' }, desc: { ru: 'Распадается на 6 бомб', en: 'Splits into 6 bomblets' },
-    unlock: 7, cost: 170, kind: 'cluster', dmg: 28, aoe: 72, r: 19, mass: 2, cd: 3.4, n: 6 },
-  { id: 'acid', name: { ru: 'Бочка кислоты', en: 'Acid Barrel' }, desc: { ru: 'Разъедает всё вокруг', en: 'Eats through everything' },
+  { id: 'cluster', name: { ru: 'Хлопушка', en: 'Party Popper' }, desc: { ru: 'Разлетается на 6 конфетти-шаров', en: 'Splits into 6 confetti balls' },
+    unlock: 7, cost: 170, kind: 'cluster', dmg: 28, aoe: 72, r: 19, mass: 2, cd: 3.4, n: 6, party: true },
+  { id: 'acid', name: { ru: 'Ведро слизи', en: 'Slime Bucket' }, desc: { ru: 'Липкая слизь размягчает всё вокруг', en: 'Sticky goo softens everything' },
     unlock: 9, cost: 260, kind: 'acid', dmg: 16, aoe: 135, r: 22, mass: 3, cd: 5, dur: 4 },
   { id: 'drill', name: { ru: 'Бур', en: 'Drill' }, desc: { ru: 'Сверлит до самой земли', en: 'Drills down to the ground' },
     unlock: 10, cost: 340, kind: 'drill', dmg: 75, aoe: 30, r: 20, mass: 4, cd: 4, dur: 1.5 },
-  { id: 'cow', name: { ru: 'Корова', en: 'Cow' }, desc: { ru: 'Прыгучая. Очень', en: 'Very bouncy. Moo' },
-    unlock: 12, cost: 480, kind: 'impact', dmg: 60, aoe: 75, r: 30, mass: 6, cd: 3.5, pierce: 0.2, bounce: 0.72, moo: true },
+  { id: 'cow', name: { ru: 'Резиновая уточка', en: 'Rubber Duck' }, desc: { ru: 'Прыгучая. Очень. Пищит', en: 'Very bouncy. Squeaks' },
+    unlock: 12, cost: 480, kind: 'impact', dmg: 60, aoe: 75, r: 30, mass: 6, cd: 3.5, pierce: 0.2, bounce: 0.72, squeak: true },
   { id: 'freeze', name: { ru: 'Ледяная бомба', en: 'Freeze Bomb' }, desc: { ru: 'Заморозка: урон x2.5', en: 'Frozen: x2.5 damage' },
     unlock: 13, cost: 600, kind: 'freeze', dmg: 10, aoe: 165, r: 20, mass: 2, cd: 7, dur: 6 },
   { id: 'bolt', name: { ru: 'Молния', en: 'Lightning' }, desc: { ru: 'Мгновенный разряд по цепи', en: 'Instant chain strike' },
@@ -1463,12 +1531,12 @@ const ITEMS = [
     unlock: 17, cost: 1100, kind: 'impact', dmg: 170, aoe: 100, r: 35, mass: 20, cd: 5, pierce: 0.92, bounce: 0.02 },
   { id: 'meteor', name: { ru: 'Метеорит', en: 'Meteor' }, desc: { ru: 'Огненный удар с неба', en: 'Fire from the sky' },
     unlock: 19, cost: 1500, kind: 'explode', dmg: 160, aoe: 165, r: 26, mass: 10, cd: 7, fire: true },
-  { id: 'laser', name: { ru: 'Орбитальный лазер', en: 'Orbital Laser' }, desc: { ru: 'Луч режет сверху вниз', en: 'A beam that cuts top to bottom' },
+  { id: 'laser', name: { ru: 'Солнечная лупа', en: 'Sun Magnifier' }, desc: { ru: 'Солнечный луч плавит сверху вниз', en: 'A sunbeam melts top to bottom' },
     unlock: 22, cost: 2300, kind: 'laser', dmg: 140, aoe: 36, r: 0, mass: 0, cd: 10, dur: 1.8 },
-  { id: 'hole', name: { ru: 'Чёрная дыра', en: 'Black Hole' }, desc: { ru: 'Засасывает обломки', en: 'Swallows the debris' },
+  { id: 'hole', name: { ru: 'Космический пылесос', en: 'Space Vacuum' }, desc: { ru: 'Засасывает обломки', en: 'Sucks up the debris' },
     unlock: 25, cost: 3500, kind: 'hole', dmg: 95, aoe: 160, r: 18, mass: 3, cd: 14, dur: 2.6 },
-  { id: 'nuke', name: { ru: 'Ядерная бомба', en: 'Nuke' }, desc: { ru: 'Без комментариев', en: 'No comment' },
-    unlock: 28, cost: 6000, kind: 'explode', dmg: 950, aoe: 430, r: 28, mass: 6, cd: 35, nuke: true, whistle: true },
+  { id: 'nuke', name: { ru: 'Астероид', en: 'Asteroid' }, desc: { ru: 'Самый большой камень в космосе', en: 'The biggest rock in space' },
+    unlock: 28, cost: 6000, kind: 'explode', dmg: 950, aoe: 430, r: 34, mass: 20, cd: 35, mega: true, fire: true },
 ];
 const ITEM = {};
 ITEMS.forEach((d) => { ITEM[d.id] = d; });
@@ -1526,14 +1594,16 @@ function drawItem(g, id, r, t, seed) {
       break;
     }
     case 'bomb': case 'cluster_b': {
-      g.strokeStyle = '#8a6a3a'; g.lineWidth = 3; g.beginPath(); g.moveTo(8, -14); g.quadraticCurveTo(16, -24, 12, -28); g.stroke();
-      const gr = g.createRadialGradient(-6, -6, 2, 0, 2, 20); gr.addColorStop(0, '#5d6470'); gr.addColorStop(1, '#111318');
-      g.fillStyle = gr; g.beginPath(); g.arc(0, 2, 18, 0, TAU); g.fill();
-      g.fillStyle = '#2b2f36'; g.fillRect(2, -16, 10, 7);
+      // firework ball: striped paper shell with a sparkling wick
+      g.strokeStyle = '#8a6a3a'; g.lineWidth = 3; g.beginPath(); g.moveTo(0, -16); g.quadraticCurveTo(6, -24, 3, -29); g.stroke();
+      const main = id === 'bomb' ? ['#ff4d6d', '#ffd23f', '#3fa7ff'] : ['#9b5cff', '#4fd36a', '#ffd23f'];
+      g.save(); g.beginPath(); g.arc(0, 2, 18, 0, TAU); g.clip();
+      for (let i = -3; i < 4; i++) { g.fillStyle = main[(i + 3) % 3]; g.fillRect(i * 9 - 4.5, -20, 9, 44); }
+      const sh = g.createRadialGradient(-6, -5, 2, 0, 2, 20); sh.addColorStop(0, 'rgba(255,255,255,.45)'); sh.addColorStop(1, 'rgba(0,0,0,.35)');
+      g.fillStyle = sh; g.fillRect(-20, -20, 40, 44); g.restore();
       const fl = 0.7 + 0.3 * Math.sin((t || 0) * 40);
-      g.fillStyle = '#ffd25a'; g.beginPath(); g.arc(12, -28, 4 * fl, 0, TAU); g.fill();
-      g.fillStyle = '#ff7a2a'; g.beginPath(); g.arc(12, -28, 2.2 * fl, 0, TAU); g.fill();
-      g.fillStyle = 'rgba(255,255,255,.35)'; g.beginPath(); g.ellipse(-7, -5, 5, 3, -0.7, 0, TAU); g.fill();
+      g.fillStyle = '#fff6b0'; for (let i = 0; i < 6; i++) { const a = i / 6 * TAU + (t || 0) * 9; g.fillRect(3 + Math.cos(a) * 6 * fl - 1, -29 + Math.sin(a) * 6 * fl - 1, 2.5, 2.5); }
+      g.fillStyle = '#ffd25a'; g.beginPath(); g.arc(3, -29, 3.5 * fl, 0, TAU); g.fill();
       break;
     }
     case 'anvil': {
@@ -1555,20 +1625,22 @@ function drawItem(g, id, r, t, seed) {
       break;
     }
     case 'cluster': {
-      g.fillStyle = '#56603a'; g.beginPath(); g.ellipse(0, 0, 13, 22, 0, 0, TAU); g.fill();
-      g.fillStyle = '#3c4428'; g.beginPath(); g.moveTo(-13, -14); g.lineTo(-20, -24); g.lineTo(-6, -20); g.closePath(); g.fill();
-      g.beginPath(); g.moveTo(13, -14); g.lineTo(20, -24); g.lineTo(6, -20); g.closePath(); g.fill();
-      g.fillStyle = '#e6c84a'; g.fillRect(-13, -2, 26, 4);
-      g.fillStyle = 'rgba(255,255,255,.25)'; g.beginPath(); g.ellipse(-5, -6, 3, 9, 0, 0, TAU); g.fill();
+      // party popper cone with confetti
+      g.fillStyle = '#ff7ab6'; g.beginPath(); g.moveTo(-14, -18); g.lineTo(14, -18); g.lineTo(0, 24); g.closePath(); g.fill();
+      g.fillStyle = '#ffd23f'; for (let i = 0; i < 3; i++) { g.beginPath(); g.moveTo(-12 + i * 4, -12 + i * 12); g.lineTo(12 - i * 4, -12 + i * 12); g.lineTo(10 - i * 4, -8 + i * 12); g.lineTo(-10 + i * 4, -8 + i * 12); g.fill(); }
+      const cc = ['#3fa7ff', '#4fd36a', '#ff4d6d', '#ffd23f', '#9b5cff'];
+      for (let i = 0; i < 9; i++) { g.fillStyle = cc[i % 5]; g.fillRect(-14 + i * 3.4, -26 - (i % 3) * 3, 3, 4); }
       break;
     }
     case 'acid': {
-      g.fillStyle = '#3d8f2a'; g.fillRect(-16, -21, 32, 42);
-      g.fillStyle = '#2a6b1c'; g.fillRect(-16, -12, 32, 3); g.fillRect(-16, 9, 32, 3);
-      g.fillStyle = '#f2e14a'; g.beginPath(); g.moveTo(0, -6); g.lineTo(7, 6); g.lineTo(-7, 6); g.closePath(); g.fill();
-      g.fillStyle = '#1b1b1b'; g.fillRect(-1, -2, 2, 5);
-      g.fillStyle = '#9cff5a'; g.beginPath(); g.ellipse(0, -21, 16, 4, 0, 0, TAU); g.fill();
-      g.fillStyle = 'rgba(255,255,255,.2)'; g.fillRect(-12, -21, 4, 42);
+      // bucket full of green slime
+      g.fillStyle = '#7d8ea3'; g.beginPath(); g.moveTo(-18, -16); g.lineTo(18, -16); g.lineTo(13, 20); g.lineTo(-13, 20); g.closePath(); g.fill();
+      g.fillStyle = 'rgba(255,255,255,.25)'; g.fillRect(-12, -14, 4, 32);
+      g.strokeStyle = '#4a5666'; g.lineWidth = 2; g.beginPath(); g.arc(0, -16, 18, Math.PI, 0); g.stroke();
+      g.fillStyle = '#7cf04a'; g.beginPath(); g.ellipse(0, -16, 18, 5, 0, 0, TAU); g.fill();
+      g.beginPath(); g.moveTo(-10, -14); g.quadraticCurveTo(-11, -2, -8, -2); g.quadraticCurveTo(-5, -2, -6, -14); g.fill();
+      g.beginPath(); g.moveTo(6, -14); g.quadraticCurveTo(5, 4, 9, 4); g.quadraticCurveTo(12, 4, 11, -14); g.fill();
+      g.fillStyle = '#c8ff9a'; g.beginPath(); g.arc(-4, -17, 2.5, 0, TAU); g.arc(6, -15, 1.8, 0, TAU); g.fill();
       break;
     }
     case 'drill': {
@@ -1581,15 +1653,14 @@ function drawItem(g, id, r, t, seed) {
       break;
     }
     case 'cow': {
-      g.fillStyle = '#fafafa'; g.beginPath(); g.ellipse(0, 0, 22, 14, 0, 0, TAU); g.fill();
-      g.fillStyle = '#1d1d1d'; g.beginPath(); g.ellipse(-8, -4, 6, 5, 0.4, 0, TAU); g.ellipse(8, 5, 5, 4, -0.3, 0, TAU); g.fill();
-      g.fillStyle = '#fafafa'; g.beginPath(); g.ellipse(22, -8, 9, 8, 0, 0, TAU); g.fill();
-      g.fillStyle = '#f2a9b8'; g.beginPath(); g.ellipse(28, -5, 5, 4, 0, 0, TAU); g.fill();
-      g.fillStyle = '#1d1d1d'; g.beginPath(); g.arc(21, -11, 1.6, 0, TAU); g.fill();
-      g.fillStyle = '#d9d3c7'; g.beginPath(); g.moveTo(17, -15); g.lineTo(15, -21); g.lineTo(20, -16); g.fill(); g.beginPath(); g.moveTo(24, -15); g.lineTo(27, -21); g.lineTo(27, -14); g.fill();
-      g.fillStyle = '#fafafa'; for (const x of [-15, -6, 6, 15]) g.fillRect(x - 2.5, 10, 5, 10);
-      g.fillStyle = '#1d1d1d'; for (const x of [-15, -6, 6, 15]) g.fillRect(x - 2.5, 18, 5, 3);
-      g.strokeStyle = '#1d1d1d'; g.lineWidth = 1.6; g.beginPath(); g.moveTo(-22, -2); g.quadraticCurveTo(-28, 4, -26, 10); g.stroke();
+      // rubber duck
+      g.fillStyle = '#ffd23f'; g.beginPath(); g.ellipse(-2, 6, 22, 14, 0, 0, TAU); g.fill();
+      g.beginPath(); g.arc(10, -10, 12, 0, TAU); g.fill();
+      g.fillStyle = '#ffb000'; g.beginPath(); g.ellipse(-6, 5, 10, 6, -0.3, 0, TAU); g.fill();
+      g.fillStyle = '#ff8a2a'; g.beginPath(); g.ellipse(23, -7, 7, 3.5, 0.15, 0, TAU); g.fill();
+      g.fillStyle = '#1d1d1d'; g.beginPath(); g.arc(13, -13, 2.2, 0, TAU); g.fill();
+      g.fillStyle = '#fff'; g.beginPath(); g.arc(13.6, -13.8, 0.8, 0, TAU); g.fill();
+      g.fillStyle = 'rgba(255,255,255,.45)'; g.beginPath(); g.ellipse(-10, -1, 7, 3, -0.3, 0, TAU); g.fill();
       break;
     }
     case 'freeze': {
@@ -1623,27 +1694,35 @@ function drawItem(g, id, r, t, seed) {
       break;
     }
     case 'laser': {
-      g.fillStyle = '#c9d1db'; g.fillRect(-8, -10, 16, 20);
-      g.fillStyle = '#2b5fb8'; g.fillRect(-26, -7, 15, 14); g.fillRect(11, -7, 15, 14);
-      g.strokeStyle = '#7fa6e8'; g.lineWidth = 1; for (const x of [-21, -16, 16, 21]) { g.beginPath(); g.moveTo(x, -7); g.lineTo(x, 7); g.stroke(); }
-      g.fillStyle = '#ff3d3d'; g.beginPath(); g.arc(0, 13, 5, 0, TAU); g.fill();
-      g.fillStyle = 'rgba(255,90,90,.5)'; g.beginPath(); g.arc(0, 13, 8, 0, TAU); g.fill();
+      // magnifying glass
+      g.strokeStyle = '#8a5a2a'; g.lineWidth = 7; g.lineCap = 'round'; g.beginPath(); g.moveTo(12, 12); g.lineTo(24, 24); g.stroke(); g.lineCap = 'butt';
+      g.fillStyle = 'rgba(190,235,255,.75)'; g.beginPath(); g.arc(-3, -3, 16, 0, TAU); g.fill();
+      g.strokeStyle = '#c9a23a'; g.lineWidth = 4; g.stroke();
+      g.fillStyle = 'rgba(255,255,255,.7)'; g.beginPath(); g.ellipse(-9, -9, 5, 3, -0.7, 0, TAU); g.fill();
+      g.fillStyle = '#fff3a0'; g.beginPath(); g.arc(-3, -3, 3, 0, TAU); g.fill();
       break;
     }
     case 'hole': {
-      const gr = g.createRadialGradient(0, 0, 4, 0, 0, 22); gr.addColorStop(0, '#000'); gr.addColorStop(0.55, '#14062a'); gr.addColorStop(0.75, '#9a4dff'); gr.addColorStop(1, 'rgba(154,77,255,0)');
+      // friendly space vacuum: swirling purple portal
+      const gr = g.createRadialGradient(0, 0, 4, 0, 0, 22); gr.addColorStop(0, '#2a1060'); gr.addColorStop(0.6, '#6a3ad0'); gr.addColorStop(0.85, '#c6a0ff'); gr.addColorStop(1, 'rgba(198,160,255,0)');
       g.fillStyle = gr; g.beginPath(); g.arc(0, 0, 22, 0, TAU); g.fill();
-      g.strokeStyle = '#e6c8ff'; g.lineWidth = 2; g.beginPath(); g.ellipse(0, 0, 21, 6, (t || 0) * 2, 0, TAU); g.stroke();
-      g.fillStyle = '#000'; g.beginPath(); g.arc(0, 0, 9, 0, TAU); g.fill();
+      g.strokeStyle = '#f0e0ff'; g.lineWidth = 2;
+      for (let i = 0; i < 3; i++) { g.beginPath(); g.arc(0, 0, 6 + i * 5, (t || 0) * 4 + i, (t || 0) * 4 + i + 2.2); g.stroke(); }
+      g.fillStyle = '#fff'; g.beginPath(); g.arc(0, 0, 3, 0, TAU); g.fill();
       break;
     }
     case 'nuke': {
-      g.fillStyle = '#3e4330';
-      g.beginPath(); g.moveTo(-8, -26); g.lineTo(8, -26); g.lineTo(14, -16); g.lineTo(-14, -16); g.closePath(); g.fill();
-      g.fillStyle = '#d8c23a'; g.beginPath(); g.ellipse(0, 4, 16, 22, 0, 0, TAU); g.fill();
-      g.fillStyle = '#1b1b1b'; g.beginPath(); g.arc(0, 4, 3, 0, TAU); g.fill();
-      for (let i = 0; i < 3; i++) { const a = (i / 3) * TAU - Math.PI / 2; g.beginPath(); g.moveTo(0, 4); g.arc(0, 4, 11, a - 0.5, a + 0.5); g.closePath(); g.fill(); }
-      g.fillStyle = 'rgba(255,255,255,.3)'; g.beginPath(); g.ellipse(-7, -4, 3, 8, 0, 0, TAU); g.fill();
+      // asteroid: big cratered space rock
+      const R = mulberry32(seed || 11);
+      g.beginPath();
+      for (let i = 0; i < 12; i++) { const a = (i / 12) * TAU, rr = 18 + R() * 4; g.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); }
+      g.closePath();
+      const gr = g.createRadialGradient(-6, -7, 2, 0, 0, 24); gr.addColorStop(0, '#b7a9c9'); gr.addColorStop(1, '#4a3f5c');
+      g.fillStyle = gr; g.fill(); g.lineWidth = 2; g.strokeStyle = '#2e2640'; g.stroke();
+      g.fillStyle = 'rgba(40,30,60,.55)';
+      for (const [x, y, r] of [[-6, -5, 5], [7, 3, 4], [-3, 9, 3], [8, -8, 2.5]]) { g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill(); }
+      g.fillStyle = 'rgba(255,255,255,.25)';
+      for (const [x, y, r] of [[-7, -6, 2], [6, 2, 1.5]]) { g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill(); }
       break;
     }
   }
@@ -2621,6 +2700,19 @@ const G = {
     UI.onLevelStart();
   },
 
+  /* show a target without starting play (behind title / job card) */
+  preview(level) {
+    Coins.flush();
+    this.level = level;
+    this.info = World.build(level);
+    this.world = this.info.world;
+    Music.world = this.world;
+    this.items.length = 0; FX.list.length = 0; FX.texts.length = 0; Effects.list.length = 0;
+    this.state = 'idle'; this.introY = 0;
+    Render.layout();
+    UI.onLevelStart();
+  },
+
   /* ---------- input ---------- */
   tryDrop(explicit) {
     if (this.state !== 'play' || this.paused) return false;
@@ -2642,7 +2734,7 @@ const G = {
 
   spawnItem(id, x, y, vx, vy, o = {}) {
     const def = ITEM[id];
-    const upright = ['anvil', 'weight', 'piano', 'drill', 'nuke', 'acid', 'cluster'].includes(id);
+    const upright = ['anvil', 'weight', 'piano', 'drill', 'acid', 'cluster'].includes(id);
     const it = {
       def, x, y, vx, vy, a: upright ? 0 : rand(-0.4, 0.4), av: upright ? 0 : rand(-4, 4), r: o.r || def.r,
       age: 0, hits: 0, hitCD: 0, alpha: 1, restT: 0, seed: randi(1, 1e6), dmg: (o.dmg || itemDamage(id)) * (o.dmgMult || 1),
@@ -2754,10 +2846,15 @@ const G = {
     this.punch = Math.min(1.5, this.punch + radius / 150);
     if (radius >= 100) this.doHitstop(0.05);
     this.vibrate(clamp(radius / 2, 30, 200));
-    if (o.nuke) {
-      this.flashA = 1.3; this.flashCol = '#fffbe8';
-      for (let i = 0; i < 40; i++) FX.add({ type: PT.SMOKE, x: x + rand(-40, 40), y: y - i * 14, vx: rand(-30, 30), vy: rand(-260, -120), life: rand(2.5, 4), size: rand(40, 80), col: pick(['#6b4a3a', '#8a5a3a', '#4a3a34']), g: 0, alpha: 0.6 });
-      for (let i = 0; i < 30; i++) FX.add({ type: PT.SMOKE, x: x + rand(-160, 160), y: y - 520 + rand(-60, 60), vx: rand(-80, 80), vy: rand(-80, 0), life: rand(2.5, 4), size: rand(60, 110), col: pick(['#7a5a48', '#a0704a', '#5a463c']), g: 0, alpha: 0.6 });
+    if (o.party) {
+      const cc = ['#ff4d6d', '#ffd23f', '#3fa7ff', '#4fd36a', '#9b5cff', '#ffffff'];
+      for (let i = 0; i < 26; i++) { const a = rand(TAU), sp = rand(200, 800); FX.add({ type: PT.CHIP, x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 200, life: rand(1, 1.8), size: rand(4, 7), col: pick(cc), a: rand(TAU), av: rand(-15, 15), g: 0.35 }); }
+      for (let i = 0; i < 4; i++) FX.sparks(x, y, 6, radius * 6, pick(cc));
+    }
+    if (o.mega) {
+      this.flashA = 1; this.flashCol = '#fffbe8';
+      for (let i = 0; i < 30; i++) FX.add({ type: PT.DUST, x: x + rand(-radius, radius), y: rand(-60, 0), vx: rand(-400, 400), vy: rand(-200, -40), life: rand(1.8, 3), size: rand(50, 90), col: pick(['#c9b8a0', '#b7a9c9', '#d8cbb5']), g: 0, alpha: 0.55 });
+      for (let i = 0; i < 30; i++) { const a = rand(-Math.PI, 0), sp = rand(400, 1200); FX.add({ type: PT.CHIP, x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: rand(1, 2), size: rand(6, 12), col: pick(['#7a6a8c', '#4a3f5c', '#9a8cad']), a: rand(TAU), av: rand(-10, 10) }); }
       FX.ring(x, 0, radius * 2.5, 'rgba(255,240,200,0.9)', 1.2, 30);
       this.shake(1.2); this.slowT = 0.6;
       Audio2.explode(2.5);
@@ -2794,13 +2891,13 @@ const G = {
     switch (def.kind) {
       case 'explode':
         it.dead = true;
-        this.explode(it.x, it.y, def.aoe, it.dmg, { nuke: def.nuke, col: def.fire ? '#ffb347' : undefined });
+        this.explode(it.x, it.y, def.aoe, it.dmg, { mega: def.mega, party: def.party, col: def.fire ? '#ffb347' : undefined });
         if (def.fire) FX.fire(it.x, it.y, 40, 40, 700);
         return;
       case 'cluster':
         it.dead = true;
-        if (it.mini) this.explode(it.x, it.y, def.aoe, it.dmg, { k: 0.6 });
-        else this.explode(it.x, it.y, def.aoe * 1.3, it.dmg * 2);
+        if (it.mini) this.explode(it.x, it.y, def.aoe, it.dmg, { k: 0.6, party: true });
+        else this.explode(it.x, it.y, def.aoe * 1.3, it.dmg * 2, { party: true });
         return;
       case 'acid': it.dead = true; Effects.acid(it.x, it.y, it.dmg, def); return;
       case 'freeze': it.dead = true; Effects.freeze(it.x, it.y, it.dmg, def); return;
@@ -2825,7 +2922,7 @@ const G = {
       if (heavy * power > 0.8) this.doHitstop(0.045);
       this.vibrate(15 + heavy * 60);
       it.hits++;
-      if (def.moo && it.hits === 1) Audio2.moo();
+      if (def.squeak && it.hits === 1) Audio2.squeak();
       if (def.breaks) { this.breakPiano(it); return; }
       if (!ct.c.alive) {
         const keep = 0.3 + (def.pierce || 0) * 0.62;
@@ -2906,7 +3003,7 @@ const G = {
           Audio2.land(it.vy / 2500 * (0.5 + def.mass / 10));
           FX.dust(it.x, 0, WORLDS[this.world].ground[0], 2, 20 + it.r, 15, 30);
           if (def.mass > 5) this.shake(0.15);
-          if (def.moo && !it.hits) { Audio2.moo(); it.hits = 1; }
+          if (def.squeak && !it.hits) { Audio2.squeak(); it.hits = 1; }
         }
         it.vy = -it.vy * (def.bounce || 0.2) * 0.7;
         if (Math.abs(it.vy) < 60) it.vy = 0;
@@ -3062,7 +3159,7 @@ const G = {
     g.save();
     g.setLineDash([14, 12]);
     g.lineDashOffset = -this.time * 60;
-    g.strokeStyle = def.kind === 'laser' ? 'rgba(255,80,80,0.6)' : def.kind === 'bolt' ? 'rgba(255,230,90,0.6)' : 'rgba(255,255,255,0.45)';
+    g.strokeStyle = def.kind === 'laser' ? 'rgba(255,220,90,0.7)' : def.kind === 'bolt' ? 'rgba(255,230,90,0.6)' : 'rgba(255,255,255,0.45)';
     g.lineWidth = 3;
     g.beginPath(); g.moveTo(wx, this.topY + 80); g.lineTo(wx, yHit); g.stroke();
     g.setLineDash([]);
@@ -3141,7 +3238,7 @@ const Effects = {
   laser(x, dmg, def) {
     this.list.push({ type: 'laser', x, t: 0, dur: def.dur, dmg, r: def.aoe, head: G.topY, dealt: 0, show: 0 });
     Audio2.laser(def.dur);
-    G.flashA = 0.2; G.flashCol = '#ffb0b0';
+    G.flashA = 0.2; G.flashCol = '#fff2b0';
   },
   hole(x, y, dmg, def) {
     this.list.push({ type: 'hole', x, y, t: 0, dur: def.dur, dmg, r: def.aoe, dealt: 0, show: 0 });
@@ -3153,7 +3250,7 @@ const Effects = {
       e.t += dt;
       switch (e.type) {
         case 'tnt':
-          if (e.t >= e.dur && !e.done) { e.done = true; G.explode(e.x, e.y, 105, World.totalHP * 0.03 + 20, { k: 0.9, noCrit: true }); }
+          if (e.t >= e.dur && !e.done) { e.done = true; G.explode(e.x, e.y, 105, World.totalHP * 0.03 + 20, { k: 0.9, noCrit: true, party: true }); }
           break;
         case 'acid':
           e.tick += dt;
@@ -3167,11 +3264,11 @@ const Effects = {
           const k = clamp(e.t / (e.dur * 0.9), 0, 1);
           e.head = lerp(G.topY + 100, 0, k * k * (3 - 2 * k));
           e.dealt += G.damageArea(e.x, e.head, e.r, e.dmg * dt, { quiet: true, power: 300, noCrit: true });
-          if (Math.random() < 0.8) FX.sparks(e.x, e.head, 2, 600, pick(['#ffb0a0', '#fff', '#ff6a5a']));
+          if (Math.random() < 0.8) FX.sparks(e.x, e.head, 2, 600, pick(['#fff2a0', '#fff', '#ffc84a']));
           if (Math.random() < 0.3) FX.smoke(e.x, e.head, 1, 20, '#5a4a4a');
           G.trauma = Math.max(G.trauma, 0.2);
           e.show += dt;
-          if (e.show > 0.4 && e.dealt >= 1) { FX.text(e.x + 40, e.head - 20, fmt(e.dealt), '#ffb0a0', 26); e.dealt = 0; e.show = 0; }
+          if (e.show > 0.4 && e.dealt >= 1) { FX.text(e.x + 40, e.head - 20, fmt(e.dealt), '#fff2a0', 26); e.dealt = 0; e.show = 0; }
           break;
         }
         case 'hole': {
@@ -3221,10 +3318,10 @@ const Effects = {
         const fade = k > 0.9 ? (1 - k) / 0.1 : Math.min(1, e.t / 0.08);
         const w = e.r * (0.9 + Math.sin(e.t * 50) * 0.08);
         g.globalCompositeOperation = 'lighter';
-        g.globalAlpha = 0.35 * fade; g.fillStyle = '#ff3b3b'; g.fillRect(e.x - w, G.topY, w * 2, e.head - G.topY);
-        g.globalAlpha = 0.7 * fade; g.fillStyle = '#ff7a6a'; g.fillRect(e.x - w * 0.45, G.topY, w * 0.9, e.head - G.topY);
+        g.globalAlpha = 0.35 * fade; g.fillStyle = '#ffb92e'; g.fillRect(e.x - w, G.topY, w * 2, e.head - G.topY);
+        g.globalAlpha = 0.7 * fade; g.fillStyle = '#ffe07a'; g.fillRect(e.x - w * 0.45, G.topY, w * 0.9, e.head - G.topY);
         g.globalAlpha = fade; g.fillStyle = '#fff4f0'; g.fillRect(e.x - w * 0.15, G.topY, w * 0.3, e.head - G.topY);
-        g.drawImage(softSprite('#ff6a5a'), e.x - w * 3, e.head - w * 3, w * 6, w * 6);
+        g.drawImage(softSprite('#ffd24a'), e.x - w * 3, e.head - w * 3, w * 6, w * 6);
         g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
       } else if (e.type === 'hole') {
         const k = e.t / e.dur;
@@ -3240,7 +3337,7 @@ const Effects = {
         g.strokeStyle = '#b07aff'; g.lineWidth = 8; g.globalAlpha = 0.5;
         g.beginPath(); g.ellipse(0, 0, r * 2, r * 0.65, 0.3, 0, TAU); g.stroke();
         g.globalAlpha = 1;
-        g.fillStyle = '#000'; g.beginPath(); g.arc(0, 0, r, 0, TAU); g.fill();
+        g.fillStyle = '#2a1060'; g.beginPath(); g.arc(0, 0, r, 0, TAU); g.fill();
         g.strokeStyle = 'rgba(255,220,255,0.8)'; g.lineWidth = 2; g.beginPath(); g.arc(0, 0, r + 2, 0, TAU); g.stroke();
         g.restore();
       }
@@ -3361,6 +3458,7 @@ const UI = {
     $('btnPlay').addEventListener('click', () => this.play());
     $('btnNext').addEventListener('click', () => this.next(false));
     $('btnX2').addEventListener('click', () => this.next(true));
+    $('orderOk').addEventListener('click', () => { Audio2.init(); Audio2.click(); this.close('order'); G.startLevel(G.level); });
     $('unlockOk').addEventListener('click', () => { Audio2.click(); this.close('unlock'); if (this._afterUnlock) { const f = this._afterUnlock; this._afterUnlock = null; f(); } });
     window.addEventListener('resize', () => this.measure());
     this.buildBar();
@@ -3382,7 +3480,9 @@ const UI = {
     $('unlockOk').textContent = T('cool');
     $('hintText').textContent = T('hint');
     if (LANG !== 'ru') { $('logo1').textContent = 'DROP'; $('logo2').textContent = '& SMASH'; document.title = 'Drop & Smash'; }
-    $('logoSub').textContent = LANG === 'ru' ? 'ЛОМАЙ ВСЁ СВЕРХУ' : 'BREAK IT FROM ABOVE';
+    $('logoSub').textContent = T('crew');
+    $('orderOk').textContent = T('take');
+    $('orderPlanLbl').textContent = T('planLbl');
   },
 
   measure() {
@@ -3513,7 +3613,7 @@ const UI = {
   play() {
     Audio2.init(); Audio2.click();
     this.close('title');
-    G.startLevel(SAVE.level);
+    this.showOrder(SAVE.level);
   },
 
   /* ---------- win ---------- */
@@ -3532,6 +3632,8 @@ const UI = {
       `<div><span>${T('reward')}</span><b>${fmt(base)} ${coin}</b></div>` +
       (fast ? `<div><span>${T('bonusFast')} (&lt;${par}s)</span><b>+${fmt(fast)} ${coin}</b></div>` : '') +
       `<div class="total"><span>${T('total')}</span><b id="winTotal">0 ${coin}</b></div>`;
+    const nx = document.getElementById('winNext') || (() => { const d = document.createElement('div'); d.id = 'winNext'; d.className = 'win-next'; $('winStats').before(d); return d; })();
+    nx.innerHTML = `${T('built')} <b>${L(STORY[G.info.idx].next)}</b>`;
     $('btnX2').innerHTML = `▶ ${T('x2')}`;
     $('btnX2').disabled = false;
     this.open('win');
@@ -3570,7 +3672,7 @@ const UI = {
     newItems.forEach((d) => { if (SAVE.items[d.id] === undefined) SAVE.items[d.id] = 0; });
     saveGame(true);
     const go = () => {
-      G.startLevel(SAVE.level);
+      this.showOrder(SAVE.level);
       if (targetForLevel(SAVE.level).world !== prevWorld) this.toast(T('worldNew'), L(WORLDS[targetForLevel(SAVE.level).world].name));
     };
     const afterAd = () => {
@@ -3578,6 +3680,18 @@ const UI = {
       else go();
     };
     if (SAVE.level % 2 === 1 && SAVE.level > 3) SDK.showFullscreen(afterAd); else afterAd();
+  },
+  /* job card: who asked for the demolition and what will be built */
+  showOrder(level) {
+    G.preview(level);
+    const info = G.info, st = STORY[info.idx], cl = CLIENTS[info.world];
+    $('orderTitle').textContent = T('order') + level;
+    $('orderTarget').textContent = L(info.def.name);
+    const av = $('orderAvatar'); av.textContent = L(cl.letter); av.style.background = cl.color;
+    $('orderClient').textContent = L(cl.name);
+    $('orderWhy').textContent = L(st.why);
+    $('orderNext').textContent = L(st.next);
+    this.open('order');
   },
   showUnlock(d, then) {
     this._afterUnlock = () => { this.select(d.id); then(); };
@@ -3673,7 +3787,7 @@ const UI = {
       saveGame(true);
       G.cd = {};
       this.close('settings');
-      G.startLevel(1);
+      this.showOrder(1);
     });
   },
 };
@@ -3696,13 +3810,9 @@ async function boot() {
 
   UI.init();
   // preview of the current target behind the title screen
-  G.level = SAVE.level;
   G.info = World.build(SAVE.level);
-  G.world = G.info.world;
-  Music.world = G.world;
   Render.resize();
-  G.state = 'idle';
-  UI.onLevelStart();
+  G.preview(SAVE.level);
   UI.showTitle();
 
   /* ---------- input ---------- */

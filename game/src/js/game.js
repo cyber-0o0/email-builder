@@ -33,6 +33,19 @@ const G = {
     UI.onLevelStart();
   },
 
+  /* show a target without starting play (behind title / job card) */
+  preview(level) {
+    Coins.flush();
+    this.level = level;
+    this.info = World.build(level);
+    this.world = this.info.world;
+    Music.world = this.world;
+    this.items.length = 0; FX.list.length = 0; FX.texts.length = 0; Effects.list.length = 0;
+    this.state = 'idle'; this.introY = 0;
+    Render.layout();
+    UI.onLevelStart();
+  },
+
   /* ---------- input ---------- */
   tryDrop(explicit) {
     if (this.state !== 'play' || this.paused) return false;
@@ -54,7 +67,7 @@ const G = {
 
   spawnItem(id, x, y, vx, vy, o = {}) {
     const def = ITEM[id];
-    const upright = ['anvil', 'weight', 'piano', 'drill', 'nuke', 'acid', 'cluster'].includes(id);
+    const upright = ['anvil', 'weight', 'piano', 'drill', 'acid', 'cluster'].includes(id);
     const it = {
       def, x, y, vx, vy, a: upright ? 0 : rand(-0.4, 0.4), av: upright ? 0 : rand(-4, 4), r: o.r || def.r,
       age: 0, hits: 0, hitCD: 0, alpha: 1, restT: 0, seed: randi(1, 1e6), dmg: (o.dmg || itemDamage(id)) * (o.dmgMult || 1),
@@ -166,10 +179,15 @@ const G = {
     this.punch = Math.min(1.5, this.punch + radius / 150);
     if (radius >= 100) this.doHitstop(0.05);
     this.vibrate(clamp(radius / 2, 30, 200));
-    if (o.nuke) {
-      this.flashA = 1.3; this.flashCol = '#fffbe8';
-      for (let i = 0; i < 40; i++) FX.add({ type: PT.SMOKE, x: x + rand(-40, 40), y: y - i * 14, vx: rand(-30, 30), vy: rand(-260, -120), life: rand(2.5, 4), size: rand(40, 80), col: pick(['#6b4a3a', '#8a5a3a', '#4a3a34']), g: 0, alpha: 0.6 });
-      for (let i = 0; i < 30; i++) FX.add({ type: PT.SMOKE, x: x + rand(-160, 160), y: y - 520 + rand(-60, 60), vx: rand(-80, 80), vy: rand(-80, 0), life: rand(2.5, 4), size: rand(60, 110), col: pick(['#7a5a48', '#a0704a', '#5a463c']), g: 0, alpha: 0.6 });
+    if (o.party) {
+      const cc = ['#ff4d6d', '#ffd23f', '#3fa7ff', '#4fd36a', '#9b5cff', '#ffffff'];
+      for (let i = 0; i < 26; i++) { const a = rand(TAU), sp = rand(200, 800); FX.add({ type: PT.CHIP, x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 200, life: rand(1, 1.8), size: rand(4, 7), col: pick(cc), a: rand(TAU), av: rand(-15, 15), g: 0.35 }); }
+      for (let i = 0; i < 4; i++) FX.sparks(x, y, 6, radius * 6, pick(cc));
+    }
+    if (o.mega) {
+      this.flashA = 1; this.flashCol = '#fffbe8';
+      for (let i = 0; i < 30; i++) FX.add({ type: PT.DUST, x: x + rand(-radius, radius), y: rand(-60, 0), vx: rand(-400, 400), vy: rand(-200, -40), life: rand(1.8, 3), size: rand(50, 90), col: pick(['#c9b8a0', '#b7a9c9', '#d8cbb5']), g: 0, alpha: 0.55 });
+      for (let i = 0; i < 30; i++) { const a = rand(-Math.PI, 0), sp = rand(400, 1200); FX.add({ type: PT.CHIP, x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: rand(1, 2), size: rand(6, 12), col: pick(['#7a6a8c', '#4a3f5c', '#9a8cad']), a: rand(TAU), av: rand(-10, 10) }); }
       FX.ring(x, 0, radius * 2.5, 'rgba(255,240,200,0.9)', 1.2, 30);
       this.shake(1.2); this.slowT = 0.6;
       Audio2.explode(2.5);
@@ -206,13 +224,13 @@ const G = {
     switch (def.kind) {
       case 'explode':
         it.dead = true;
-        this.explode(it.x, it.y, def.aoe, it.dmg, { nuke: def.nuke, col: def.fire ? '#ffb347' : undefined });
+        this.explode(it.x, it.y, def.aoe, it.dmg, { mega: def.mega, party: def.party, col: def.fire ? '#ffb347' : undefined });
         if (def.fire) FX.fire(it.x, it.y, 40, 40, 700);
         return;
       case 'cluster':
         it.dead = true;
-        if (it.mini) this.explode(it.x, it.y, def.aoe, it.dmg, { k: 0.6 });
-        else this.explode(it.x, it.y, def.aoe * 1.3, it.dmg * 2);
+        if (it.mini) this.explode(it.x, it.y, def.aoe, it.dmg, { k: 0.6, party: true });
+        else this.explode(it.x, it.y, def.aoe * 1.3, it.dmg * 2, { party: true });
         return;
       case 'acid': it.dead = true; Effects.acid(it.x, it.y, it.dmg, def); return;
       case 'freeze': it.dead = true; Effects.freeze(it.x, it.y, it.dmg, def); return;
@@ -237,7 +255,7 @@ const G = {
       if (heavy * power > 0.8) this.doHitstop(0.045);
       this.vibrate(15 + heavy * 60);
       it.hits++;
-      if (def.moo && it.hits === 1) Audio2.moo();
+      if (def.squeak && it.hits === 1) Audio2.squeak();
       if (def.breaks) { this.breakPiano(it); return; }
       if (!ct.c.alive) {
         const keep = 0.3 + (def.pierce || 0) * 0.62;
@@ -318,7 +336,7 @@ const G = {
           Audio2.land(it.vy / 2500 * (0.5 + def.mass / 10));
           FX.dust(it.x, 0, WORLDS[this.world].ground[0], 2, 20 + it.r, 15, 30);
           if (def.mass > 5) this.shake(0.15);
-          if (def.moo && !it.hits) { Audio2.moo(); it.hits = 1; }
+          if (def.squeak && !it.hits) { Audio2.squeak(); it.hits = 1; }
         }
         it.vy = -it.vy * (def.bounce || 0.2) * 0.7;
         if (Math.abs(it.vy) < 60) it.vy = 0;
@@ -474,7 +492,7 @@ const G = {
     g.save();
     g.setLineDash([14, 12]);
     g.lineDashOffset = -this.time * 60;
-    g.strokeStyle = def.kind === 'laser' ? 'rgba(255,80,80,0.6)' : def.kind === 'bolt' ? 'rgba(255,230,90,0.6)' : 'rgba(255,255,255,0.45)';
+    g.strokeStyle = def.kind === 'laser' ? 'rgba(255,220,90,0.7)' : def.kind === 'bolt' ? 'rgba(255,230,90,0.6)' : 'rgba(255,255,255,0.45)';
     g.lineWidth = 3;
     g.beginPath(); g.moveTo(wx, this.topY + 80); g.lineTo(wx, yHit); g.stroke();
     g.setLineDash([]);
@@ -553,7 +571,7 @@ const Effects = {
   laser(x, dmg, def) {
     this.list.push({ type: 'laser', x, t: 0, dur: def.dur, dmg, r: def.aoe, head: G.topY, dealt: 0, show: 0 });
     Audio2.laser(def.dur);
-    G.flashA = 0.2; G.flashCol = '#ffb0b0';
+    G.flashA = 0.2; G.flashCol = '#fff2b0';
   },
   hole(x, y, dmg, def) {
     this.list.push({ type: 'hole', x, y, t: 0, dur: def.dur, dmg, r: def.aoe, dealt: 0, show: 0 });
@@ -565,7 +583,7 @@ const Effects = {
       e.t += dt;
       switch (e.type) {
         case 'tnt':
-          if (e.t >= e.dur && !e.done) { e.done = true; G.explode(e.x, e.y, 105, World.totalHP * 0.03 + 20, { k: 0.9, noCrit: true }); }
+          if (e.t >= e.dur && !e.done) { e.done = true; G.explode(e.x, e.y, 105, World.totalHP * 0.03 + 20, { k: 0.9, noCrit: true, party: true }); }
           break;
         case 'acid':
           e.tick += dt;
@@ -579,11 +597,11 @@ const Effects = {
           const k = clamp(e.t / (e.dur * 0.9), 0, 1);
           e.head = lerp(G.topY + 100, 0, k * k * (3 - 2 * k));
           e.dealt += G.damageArea(e.x, e.head, e.r, e.dmg * dt, { quiet: true, power: 300, noCrit: true });
-          if (Math.random() < 0.8) FX.sparks(e.x, e.head, 2, 600, pick(['#ffb0a0', '#fff', '#ff6a5a']));
+          if (Math.random() < 0.8) FX.sparks(e.x, e.head, 2, 600, pick(['#fff2a0', '#fff', '#ffc84a']));
           if (Math.random() < 0.3) FX.smoke(e.x, e.head, 1, 20, '#5a4a4a');
           G.trauma = Math.max(G.trauma, 0.2);
           e.show += dt;
-          if (e.show > 0.4 && e.dealt >= 1) { FX.text(e.x + 40, e.head - 20, fmt(e.dealt), '#ffb0a0', 26); e.dealt = 0; e.show = 0; }
+          if (e.show > 0.4 && e.dealt >= 1) { FX.text(e.x + 40, e.head - 20, fmt(e.dealt), '#fff2a0', 26); e.dealt = 0; e.show = 0; }
           break;
         }
         case 'hole': {
@@ -633,10 +651,10 @@ const Effects = {
         const fade = k > 0.9 ? (1 - k) / 0.1 : Math.min(1, e.t / 0.08);
         const w = e.r * (0.9 + Math.sin(e.t * 50) * 0.08);
         g.globalCompositeOperation = 'lighter';
-        g.globalAlpha = 0.35 * fade; g.fillStyle = '#ff3b3b'; g.fillRect(e.x - w, G.topY, w * 2, e.head - G.topY);
-        g.globalAlpha = 0.7 * fade; g.fillStyle = '#ff7a6a'; g.fillRect(e.x - w * 0.45, G.topY, w * 0.9, e.head - G.topY);
+        g.globalAlpha = 0.35 * fade; g.fillStyle = '#ffb92e'; g.fillRect(e.x - w, G.topY, w * 2, e.head - G.topY);
+        g.globalAlpha = 0.7 * fade; g.fillStyle = '#ffe07a'; g.fillRect(e.x - w * 0.45, G.topY, w * 0.9, e.head - G.topY);
         g.globalAlpha = fade; g.fillStyle = '#fff4f0'; g.fillRect(e.x - w * 0.15, G.topY, w * 0.3, e.head - G.topY);
-        g.drawImage(softSprite('#ff6a5a'), e.x - w * 3, e.head - w * 3, w * 6, w * 6);
+        g.drawImage(softSprite('#ffd24a'), e.x - w * 3, e.head - w * 3, w * 6, w * 6);
         g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
       } else if (e.type === 'hole') {
         const k = e.t / e.dur;
@@ -652,7 +670,7 @@ const Effects = {
         g.strokeStyle = '#b07aff'; g.lineWidth = 8; g.globalAlpha = 0.5;
         g.beginPath(); g.ellipse(0, 0, r * 2, r * 0.65, 0.3, 0, TAU); g.stroke();
         g.globalAlpha = 1;
-        g.fillStyle = '#000'; g.beginPath(); g.arc(0, 0, r, 0, TAU); g.fill();
+        g.fillStyle = '#2a1060'; g.beginPath(); g.arc(0, 0, r, 0, TAU); g.fill();
         g.strokeStyle = 'rgba(255,220,255,0.8)'; g.lineWidth = 2; g.beginPath(); g.arc(0, 0, r + 2, 0, TAU); g.stroke();
         g.restore();
       }

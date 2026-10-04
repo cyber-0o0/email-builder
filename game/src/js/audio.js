@@ -172,14 +172,10 @@ const Audio2 = {
     if (!this.ok('whistle', 0.2)) return;
     this.tone({ f: 1600, f2: 500, dur, slide: dur, g: 0.07, type: 'sine', a: 0.05 });
   },
-  moo() {
-    if (!this.ok('moo', 0.4)) return;
-    const c = this.ctx; const t = c.currentTime;
-    const o = c.createOscillator(); o.type = 'sawtooth';
-    o.frequency.setValueAtTime(150, t); o.frequency.linearRampToValueAtTime(175, t + 0.25); o.frequency.linearRampToValueAtTime(120, t + 0.9);
-    const f = c.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 3; f.frequency.setValueAtTime(500, t); f.frequency.linearRampToValueAtTime(900, t + 0.3); f.frequency.linearRampToValueAtTime(400, t + 0.9);
-    const g = c.createGain(); this._env(g, t, 0.08, 0.9, 0.35);
-    o.connect(f); f.connect(g); g.connect(this.sfx); o.start(t); o.stop(t + 1.1);
+  squeak() {
+    if (!this.ok('squeak', 0.3)) return;
+    this.tone({ f: 1300, f2: 1900, dur: 0.12, slide: 0.08, g: 0.12, type: 'square', lp: 3500 });
+    this.tone({ f: 1800, f2: 1100, dur: 0.18, slide: 0.15, g: 0.1, type: 'square', lp: 3500, delay: 0.1 });
   },
   piano() {
     if (!this.ok('piano', 0.2)) return;

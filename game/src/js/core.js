@@ -149,7 +149,7 @@ let LANG = 'ru';
 const STR = {
   ru: {
     play: 'Играть', tapToStart: 'Нажми, чтобы начать', level: 'Уровень', boss: 'БОСС',
-    destroyed: 'РАЗРУШЕНО!', reward: 'Награда', next: 'Дальше', x2: 'x2 за рекламу',
+    destroyed: 'ГОТОВО!', reward: 'Награда', next: 'Дальше', x2: 'x2 за рекламу',
     shop: 'Мастерская', items: 'Предметы', upgrades: 'Улучшения', settings: 'Настройки',
     sound: 'Звуки', music: 'Музыка', vibro: 'Вибрация', close: 'Закрыть', on: 'Вкл', off: 'Выкл',
     dmg: 'Урон', cd: 'Перезарядка', lvlShort: 'ур.', unlockAt: 'Откроется на уровне', max: 'МАКС',
@@ -158,14 +158,15 @@ const STR = {
     combo: 'КОМБО', crit: 'КРИТ!', time: 'Время', bonusFast: 'Бонус за скорость', coinsLoot: 'Добыча',
     total: 'Итого', notReady: 'Перезарядка', resetProgress: 'Сбросить прогресс', confirmReset: 'Точно? Нажми ещё раз',
     worldNew: 'Новый мир', freeCoins: 'Монеты за рекламу', get: 'Получить',
-    drone: 'Дрон-бомбардир', droneDesc: 'Сам сбрасывает камни', power: 'Сила удара', powerDesc: 'Урон всех предметов',
+    drone: 'Дрон-помощник', droneDesc: 'Сам сбрасывает камни', power: 'Сила удара', powerDesc: 'Урон всех предметов',
     greed: 'Жадность', greedDesc: 'Больше монет', speed: 'Механика', speedDesc: 'Быстрее перезарядка',
     critU: 'Точность', critDesc: 'Шанс крита x3', buy: 'Купить', locked: 'Закрыто', paused: 'Пауза',
     sel: 'Выбрано', record: 'Рекорд',
+    order: 'Заказ №', take: 'Взяться за работу!', planLbl: 'Потом здесь будет:', built: 'Готово! Здесь появится:', crew: 'БРИГАДА СНОСА: УБИРАЕМ СТАРОЕ, СТРОИМ НОВОЕ', done: 'ГОТОВО!',
   },
   en: {
     play: 'Play', tapToStart: 'Tap to start', level: 'Level', boss: 'BOSS',
-    destroyed: 'DESTROYED!', reward: 'Reward', next: 'Next', x2: 'x2 for ad',
+    destroyed: 'JOB DONE!', reward: 'Reward', next: 'Next', x2: 'x2 for ad',
     shop: 'Workshop', items: 'Items', upgrades: 'Upgrades', settings: 'Settings',
     sound: 'Sounds', music: 'Music', vibro: 'Vibration', close: 'Close', on: 'On', off: 'Off',
     dmg: 'Damage', cd: 'Cooldown', lvlShort: 'lv.', unlockAt: 'Unlocks at level', max: 'MAX',
@@ -174,10 +175,11 @@ const STR = {
     combo: 'COMBO', crit: 'CRIT!', time: 'Time', bonusFast: 'Speed bonus', coinsLoot: 'Loot',
     total: 'Total', notReady: 'Reloading', resetProgress: 'Reset progress', confirmReset: 'Sure? Tap again',
     worldNew: 'New world', freeCoins: 'Coins for ad', get: 'Get',
-    drone: 'Bomber drone', droneDesc: 'Drops rocks on its own', power: 'Impact power', powerDesc: 'Damage of all items',
+    drone: 'Helper drone', droneDesc: 'Drops rocks on its own', power: 'Impact power', powerDesc: 'Damage of all items',
     greed: 'Greed', greedDesc: 'More coins', speed: 'Mechanics', speedDesc: 'Faster reload',
     critU: 'Precision', critDesc: 'x3 crit chance', buy: 'Buy', locked: 'Locked', paused: 'Paused',
     sel: 'Selected', record: 'Best',
+    order: 'Job #', take: 'Take the job!', planLbl: 'What comes next:', built: 'Done! Coming here:', crew: 'DEMOLITION CREW: CLEAR THE OLD, BUILD THE NEW', done: 'DONE!',
   },
 };
 const T = (k) => (STR[LANG] && STR[LANG][k]) || STR.ru[k] || k;
